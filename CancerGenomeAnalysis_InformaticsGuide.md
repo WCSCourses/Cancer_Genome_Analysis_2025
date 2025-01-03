@@ -1,4 +1,5 @@
-# <img src="https://coursesandconferences.wellcomeconnectingscience.org/wp-content/themes/wcc_courses_and_conferences/dist/assets/svg/logo.svg" width="300" height="50"> Add Course Title Informatics Guide
+# <img src="https://coursesandconferences.wellcomeconnectingscience.org/wp-content/themes/wcc_courses_and_conferences/dist/assets/svg/logo.svg" width="300" height="50"> 
+# Cancer Genome Analysis Informatics Guide
 
 **Software used during the course**      
 

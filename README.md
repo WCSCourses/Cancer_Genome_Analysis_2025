@@ -6,6 +6,7 @@
 
 [Wellcome Connecting Science Course Run Website](https://coursesandconferences.wellcomeconnectingscience.org/event/cancer-genome-analysis-asia-20250330/) <br /> 
 [Course Time Table 2025](#) <br /> 
+[Course Informatics Guide](https://github.com/WCSCourses/Cancer_Genome_Analysis_2025/blob/main/CancerGenomeAnalysis_InformaticsGuide.md)
 
 Learn to analyse genomics data from cancer samples with hands-on practical exercises in mutation calling, driver gene identification, mutational signature analysis and RNA deconvolution.
 

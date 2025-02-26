@@ -1,11 +1,47 @@
 # <img src="https://coursesandconferences.wellcomeconnectingscience.org/wp-content/themes/wcc_courses_and_conferences/dist/assets/svg/logo.svg" width="300" height="50"> 
 # Cancer Genome Analysis Informatics Guide
 
-**Software used during the course**      
+## **Software used during the course**
 
-| Software | Version (if not latest) | Module |Notes |
+| Software | Version (if not latest) | Module | Notes |
 |-------------|--------------|----------|-------------|
-| [Software Name](Software link) | Version Details | Module Name| Space for notes |
+| [R](https://www.r-project.org/) | 4.3.3 | Statistical Computing | Required for many bioinformatics tools |
+| [RStudio](https://posit.co/download/rstudio-desktop/) | 4.3.3 | IDE for R | Recommended for R users |
+| [Samtools](http://www.htslib.org/) | 1.9 | NGS Analysis | Used for BAM file processing |
+| [BCFtools](http://www.htslib.org/) | 1.9 | Variant Calling | Works with VCF/BCF files |
+| [GATK](https://gatk.broadinstitute.org/hc/en-us) | 4.6.1.0 | Variant Calling | Genome Analysis Toolkit |
+| [dndscv](https://github.com/im3sanger/dndscv) | Latest | Mutation Analysis | dN/dS ratio calculations |
+| [CIBERSORT](https://cibersortx.stanford.edu/) | Latest | Deconvolution | Immune cell type estimation |
+| [maftools](https://bioconductor.org/packages/release/bioc/html/maftools.html) | Latest | Mutation Analysis | Visualization of somatic mutations |
+| [VEP (Variant Effect Predictor)](https://www.ensembl.org/info/docs/tools/vep/index.html) | Latest | Variant Annotation | Provided by Ensembl |
+| [SnpEff](https://pcingola.github.io/SnpEff/) | 5.2 | Variant Annotation | Predicts variant effects |
+| [BWA](http://bio-bwa.sourceforge.net/) | 7.18 | NGS Alignment | Aligns sequences to reference genome |
+| [SigProfilerExtractor](https://github.com/AlexandrovLab/SigProfilerExtractor) | Latest | Mutation Signatures | Extracts mutational signatures |
+| [SigProfilerMatrixGenerator](https://github.com/AlexandrovLab/SigProfilerMatrixGenerator) | Latest | Mutation Signatures | Generates matrices for signature analysis |
+| [SigProfilerAssignment](https://github.com/AlexandrovLab/SigProfilerAssignment) | Latest | Mutation Signatures | Assigns signatures to samples |
+
+
+## **To run the software you will have to activate an environment (bioinfo_env), What is an Environment?**
+An environment is an isolated space where specific software, dependencies, and libraries are installed. It ensures that all required tools run in a controlled and reproducible way, avoiding conflicts with other system applications.
+
+## For this course, we use the **bioinfo_env**  environment.
+
+⚠️ **Note:** Software will **not work outside the environment.**
+
+## **How to Activate the bioinformatics_env Environment**
+Before using any software, activate the environment with:
+
+```bash
+conda activate bioinfo_env
+```
+
+## **To deactivate the environment when you're done:**
+
+```bash
+conda deactivate
+```
+
+Link to [bioinfo_env.yml]()
 
 ## Informatics Set-Up
 For installation and setup, please refer to the following guides:

@@ -41,7 +41,7 @@ conda activate mutational_signatures
 conda deactivate
 ```
 
-Link to [mutational_signatures.yml]()
+Link to [mutational_signatures.yml](https://github.com/WCSCourses/Cancer_Genome_Analysis_2025/blob/main/course_data_2025/env_mutational_signatures.yml)
 
 ## Informatics Set-Up
 For installation and setup, please refer to the following guides:

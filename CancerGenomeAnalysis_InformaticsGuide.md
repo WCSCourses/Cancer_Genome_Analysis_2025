@@ -21,18 +21,18 @@
 | [SigProfilerAssignment](https://github.com/AlexandrovLab/SigProfilerAssignment) | Latest | Mutation Signatures | Assigns signatures to samples|
 
 
-## **To run the SigProfiler software you will have to activate an environment (mutational_signatures_env), What is an Environment?**
+## **To run the SigProfiler software you will have to activate an environment (mutational_signatures), What is an Environment?**
 An environment is an isolated space where specific software, dependencies, and libraries are installed. It ensures that all required tools run in a controlled and reproducible way, avoiding conflicts with other system applications.
 
-## For this course, we use the **mutational_signatures_env**  environment.
+## For this course, we use the **mutational_signatures**  environment.
 
 ⚠️ **Note:** Software will **not work outside the environment.**
 
-## **How to Activate the mutational_signatures_env Environment**
+## **How to Activate the mutational_signatures Environment**
 Before using any software, activate the environment with:
 
 ```bash
-conda activate mutational_signatures_env
+conda activate mutational_signatures
 ```
 
 ## **To deactivate the environment when you're done:**

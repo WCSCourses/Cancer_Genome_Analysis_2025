@@ -18,21 +18,21 @@
 | [BWA](http://bio-bwa.sourceforge.net/) | 7.18 | NGS Alignment | Aligns sequences to reference genome |
 | [SigProfilerExtractor](https://github.com/AlexandrovLab/SigProfilerExtractor) | Latest | Mutation Signatures | Extracts mutational signatures |
 | [SigProfilerMatrixGenerator](https://github.com/AlexandrovLab/SigProfilerMatrixGenerator) | Latest | Mutation Signatures | Generates matrices for signature analysis |
-| [SigProfilerAssignment](https://github.com/AlexandrovLab/SigProfilerAssignment) | Latest | Mutation Signatures | Assigns signatures to samples |
+| [SigProfilerAssignment](https://github.com/AlexandrovLab/SigProfilerAssignment) | Latest | Mutation Signatures | Assigns signatures to samples|
 
 
-## **To run the software you will have to activate an environment (bioinfo_env), What is an Environment?**
+## **To run the SigProfiler software you will have to activate an environment (mutational_signatures_env), What is an Environment?**
 An environment is an isolated space where specific software, dependencies, and libraries are installed. It ensures that all required tools run in a controlled and reproducible way, avoiding conflicts with other system applications.
 
-## For this course, we use the **bioinfo_env**  environment.
+## For this course, we use the **mutational_signatures_env**  environment.
 
 ⚠️ **Note:** Software will **not work outside the environment.**
 
-## **How to Activate the bioinformatics_env Environment**
+## **How to Activate the mutational_signatures_env Environment**
 Before using any software, activate the environment with:
 
 ```bash
-conda activate bioinfo_env
+conda activate mutational_signatures_env
 ```
 
 ## **To deactivate the environment when you're done:**
@@ -41,7 +41,7 @@ conda activate bioinfo_env
 conda deactivate
 ```
 
-Link to [bioinfo_env.yml]()
+Link to [mutational_signatures.yml]()
 
 ## Informatics Set-Up
 For installation and setup, please refer to the following guides:

@@ -42,6 +42,7 @@ conda deactivate
 ```
 
 Link to [mutational_signatures.yml](https://github.com/WCSCourses/Cancer_Genome_Analysis_2025/blob/main/course_data_2025/env_mutational_signatures.yml)
+Installation Guide here [SigProfilerHelper](https://github.com/edawson/SigProfilerHelper)
 
 ## Informatics Set-Up
 For installation and setup, please refer to the following guides:
@@ -70,6 +71,6 @@ Take a look at what courses are coming up at [Wellcome Connecting Science Course
 [Wellcome Connecting Science GitHub Home Page](https://github.com/WCSCourses) 
 
 For more information or queries, feel free to contact us via the [Wellcome Connecting Science website](https://coursesandconferences.wellcomeconnectingscience.org).<br /> 
-Find us on socials [Wellcome Connecting Science Linktr](https://linktr.ee/eventswcs)
+Please find us on socials [Wellcome Connecting Science Linktr](https://linktr.ee/eventswcs)
 
 ---

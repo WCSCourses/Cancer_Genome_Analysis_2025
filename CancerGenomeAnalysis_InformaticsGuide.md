@@ -21,10 +21,10 @@
 | [SigProfilerAssignment](https://github.com/AlexandrovLab/SigProfilerAssignment) | Latest | Mutation Signatures | Assigns signatures to samples|
 
 
-## **To run the SigProfiler software you will have to activate an environment (mutational_signatures), What is an Environment?**
+## **To run the SigProfiler software, you will have to activate an environment (mutational_signatures), What is an Environment?**
 An environment is an isolated space where specific software, dependencies, and libraries are installed. It ensures that all required tools run in a controlled and reproducible way, avoiding conflicts with other system applications.
 
-## For this course, we use the **mutational_signatures**  environment.
+## For this course, we use the **mutational_signatures** and **samtools_env** environment.
 
 ⚠️ **Note:** Software will **not work outside the environment.**
 
@@ -34,6 +34,14 @@ Before using any software, activate the environment with:
 ```bash
 conda activate mutational_signatures
 ```
+
+## **How to Activate the samtools_env Environment**
+Before using any software, activate the environment with:
+
+```bash
+conda activate samtools_env
+```
+
 
 ## **To deactivate the environment when you're done:**
 
@@ -48,7 +56,6 @@ Installation Guide here [SigProfilerHelper](https://github.com/edawson/SigProfil
 For installation and setup, please refer to the following guides:
 
 - **[Oracle VM VirtualBox Installation Guide](https://github.com/WCSCourses/index/blob/main/VM_Guide.md)** – Detailed instructions for installing and configuring VirtualBox on different operating systems. *(Note: Separate installations are needed for Intel-based and ARM-based Macs, and the VDI files will differ.)*
-- **[Docker Installation Guide](https://github.com/WCSCourses/index/blob/main/Docker_guide.md)** – Step-by-step guide for installing Docker on Windows, macOS, and Linux.
 
 The Host Operating System Requirements are: <br />
 - RAM requirement: 8GB (preferably 12GB) <br />
@@ -56,7 +63,7 @@ The Host Operating System Requirements are: <br />
 - Hard disk space: 200GB <br />
 - Admin rights to the computer <br />
 
-## Citing and Re-using Course Material
+## Citing and Reusing Course Material
 
 The course data are free to reuse and adapt with appropriate attribution. All course data in these repositories are licensed under the <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /> 
 

@@ -873,7 +873,7 @@ following questions:
 <div class="q_box">
 
 - **Q13.** Which are the most prevalent signatures in the `COAD_POLE`
-  subtype? **POLE signatures (SBS10a, SBS10b)**"]'
+  subtype? **POLE signatures (SBS10a, SBS10b)**
   
 - **Q14.** According to the
   signature results, which is the DNA repair associated gene that seems

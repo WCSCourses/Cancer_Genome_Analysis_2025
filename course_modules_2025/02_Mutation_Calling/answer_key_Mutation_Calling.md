@@ -269,8 +269,8 @@ How many unmapped reads were present? (hint: check the metrics.txt file)
 
 
 ```
-63 (normal)
-44 (Tumor)
+109 (normal)
+69 (Tumor)
 ```
 
 What percent of reads were optical duplicates?
@@ -286,6 +286,8 @@ What percent of reads were optical duplicates?
 The next step in the process is to generate a Base Quality Score Recalibration (BQSR) report.
 The BQSR process will normalize the quality scores within a BAM file based on a set of known variants
 (especially indels), resulting in more accurate variant calls downstream.
+
+**Note**: There is some debate about whether or not to run BQSR. For now, we recommend doing it as part of the best practice workflow.
 
 ```bash
 gatk BaseRecalibrator \

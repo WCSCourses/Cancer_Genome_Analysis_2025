@@ -32,15 +32,14 @@ Any data provided will be provided via HTTP / FTP and can be downloaded with wge
 wget <file>
 ```
 
-
 In the VM, we have a directory titled `/home/manager/course_data`.
-This directory contains data from the [Texas Cancer Research Biobank Open Access project.](http://stegg.hgsc.bcm.edu/open.html).
+This directory contains data from the [Texas Cancer Research Biobank Open Access project.](http://stegg.hgsc.bcm.edu/open.html), [originally published in Nature Scientific Reports](https://www.nature.com/articles/sdata201610).
 
 
 If you're on your own machine, create a directory named `course_data` and store your data there.
 
 
-We're using whole-eexome sequenced data from Case 002, a woman in her 60s who presented with neuroendocrine carcinoma
+We're using whole-exome sequenced data from Case 002, a woman in her 60s who presented with neuroendocrine carcinoma
 of the pancreas and received no prior treatment.
 
 
@@ -67,46 +66,76 @@ mkdir mutation_calling
 cd mutation_calling
 ```
 
-Tarball of folder containing references: `https://r2-public-worker.atacama.workers.dev/references.tar`
+**Updated 2025**: The entire tutorial, except for the MAF / huge reference files, now live in a single tarball 🎉 .
 
-Tarball of input data (not in a folder): `https://r2-public-worker.atacama.workers.dev/wgs_chr22_TCRBOA6_somatic_data.tar`
 
-To download these:
+A compressed tarball of the mutation calling exercise data is graciously hosted by Phileal: `https://public.phileal.com/tutorials/cancer_genome_analysis_2025/exercises_02_mutation_calling.tgz`
+
+To download this:
 
 ```bash
-wget https://r2-public-worker.atacama.workers.dev/wgs_chr22_TCRBOA6_somatic_data.tar
-wget https://r2-public-worker.atacama.workers.dev/references.tar
+wget https://public.phileal.com/tutorials/cancer_genome_analysis_2025/exercises_02_mutation_calling.tgz
 
-tar xvf references.tar
-tar xvf wgs_chr22_TCRBOA6_somatic_data.tar
+tar xvf exercises_02_mutation_calling.tgz
 ```
 
-After untarring these files, the following data / directory will be present in your `module_2` directory:
+After untarring these files, check out the directory structure:
 
 ```bash
-references/
-backup.chr22_TCRBOA6-Normal.bam
-backup.chr22_TCRBOA6-Normal.markdups.bam
-backup.chr22_TCRBOA6-Normal.markdups.baseRecal.bai
-backup.chr22_TCRBOA6-Normal.markdups.baseRecal.bam
-backup.chr22_TCRBOA6-Normal.markdups.baseRecal.bam.bai
-backup.chr22_TCRBOA6-Normal.markdups.BQSR-REPORT.txt
-backup.chr22_TCRBOA6-Normal.markdups.metrics.txt
-backup.chr22_TCRBOA6-Tumor.bam
-backup.chr22_TCRBOA6-Tumor.markdups.bam
-backup.chr22_TCRBOA6-Tumor.markdups.baseRecal.bai
-backup.chr22_TCRBOA6-Tumor.markdups.baseRecal.bam
-backup.chr22_TCRBOA6-Tumor.markdups.baseRecal.bam.bai
-backup.chr22_TCRBOA6-Tumor.markdups.BQSR-REPORT.txt
-backup.chr22_TCRBOA6-Tumor.markdups.metrics.txt
-backup.chr22_TCRBOA6-Tumor.TCRBOA6-Normal.funcotated.maf
-backup.chr22_TCRBOA6-Tumor.TCRBOA6-Normal.vcf
-backup.chr22_TCRBOA6-Tumor.TCRBOA6-Normal.vcf.idx
-backup.chr22_TCRBOA6-Tumor.TCRBOA6-Normal.vcf.stats
-chr22.TCRBOA6-Normal_1.fastq.gz
-chr22.TCRBOA6-Normal_2.fastq.gz
-chr22.TCRBOA6-Tumor_1.fastq.gz
-chr22.TCRBOA6-Tumor_2.fastq.gz
+tree exercises_02_mutation_calling
+```
+
+```bash
+exercises_02_mutation_calling
+├── backup
+│   ├── run_normal.sh
+│   ├── run_tumor.sh
+│   ├── TCRBOA2-Normal-WEX.region.sorted.bam
+│   ├── TCRBOA2-Normal-WEX.region.sorted.markdups.bam
+│   ├── TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bai
+│   ├── TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam
+│   ├── TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam.bai
+│   ├── TCRBOA2-Normal-WEX.region.sorted.markdups.BQSR-REPORT.txt
+│   ├── TCRBOA2-Normal-WEX.region.sorted.markdups.metrics.txt
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.bam
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.markdups.bam
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bai
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam.bai
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.markdups.BQSR-REPORT.txt
+│   ├── TCRBOA2-Tumor-WEX.region.sorted.markdups.metrics.txt
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtered.vcf
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtered.vcf.idx
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtering_stats
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.mutect.filtered.pass_only.vcf.gz
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.mutect.filtered.pass_only.vcf.gz.tbi
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf
+│   ├── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf.idx
+│   └── TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf.stats
+├── normal_data
+│   ├── remapped.bam
+│   ├── remapped.bam.bai
+│   ├── TCRBOA2-N-WEX_R1.fastq.gz
+│   └── TCRBOA2-N-WEX_R2.fastq.gz
+├── references
+│   ├── Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz
+│   ├── Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz.tbi
+│   ├── reference.dict
+│   ├── reference.fasta
+│   ├── reference.fasta.amb
+│   ├── reference.fasta.ann
+│   ├── reference.fasta.bwt
+│   ├── reference.fasta.fai
+│   ├── reference.fasta.pac
+│   └── reference.fasta.sa
+├── tumor_data
+│   ├── remapped.bam
+│   ├── remapped.bam.bai
+│   ├── TCRBOA2-T-WEX_R1.fastq.gz
+│   └── TCRBOA2-T-WEX_R2.fastq.gz
+└── workdir
+
+5 directories, 42 files
 ```
 
 The backup files are there in case you don't want to run long-running commands. The FASTQs are present to run the tutorial below.
@@ -153,19 +182,6 @@ PATH=${PATH}:${gatk_path}
 In addition, a script for the entire alignment, qc, and calling process
 has been integrated into a single BASH script which can be found
 in this repository, named `calling_and_annotation_pipeline.sh`.
-
-## Indexing Reference Genomes
-
-**Note: The references have already been indexed. You do not need to run the below command in the VM.**
-BWA requires an input reference genome as well as several indexes it uses to efficiently align reads. Today, we'll be using the `Homo_sapiens_assembly38.fasta` reference from the Broad Institute. These indexes are provided for you
-in the `~/references/` directory and are also downloadable from the [Broad Resource Bundle site](https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0;tab=objects?prefix=&forceOnObjectsSortingFiltering=false). If you needed to generate them for a new reference genome, you could use the `bwa index` command like so:
-
-```bash
-bwa index ~/references/Homo_sapiens_assembly38.fasta
-```
-This command will take a very long time to run on the VM, and we've precomputed the indices, so there's no need to run it again.
-Luckily, it only needs to be run once per reference, and can be reused for every new sample.
-Expected runtime: roughly 1.5 hours.
 
 
 
@@ -243,7 +259,7 @@ samtools view -o <output BAM> -b <BAM> <region>
 To slice our BAM, we'll do the following:
 
 ```bash
-samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr22:28650000-28750000
+samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr1:50000000-51000000
 ```
 
 **How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files.)
@@ -259,7 +275,7 @@ Now, slice the Tumor sample BAM to the same region; make sure to name it using t
 ```bash
 
 ## Fill out the missing portions of this command
-samtools view -o ??? -b ??? chr22:28650000-28750000
+samtools view -o ??? -b ??? chr1:50000000-51000000
 ```
 
 2. Convert our BAM to FASTQ so we can realign our reads. We can use the `samtools fastq` command for this:
@@ -268,37 +284,6 @@ samtools fastq -1 TCRBOA2-N-WEX.region_1.fastq -2 TCRBOA2-N-WEX.region_2.fastq -
 ```
 
 We should now have two FASTQ files for our normal sample - go ahead and do the same for our tumor.
-
-
-3. Download our reference and create the index files for the exercise:
-
-```bash
-wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
-```
-
-And create our references indices using the instructions in the indexing section above (Hint: use the following commands.):
-
-```bash
-samtools faidx <ref>
-```
-
-```bash
-bwa index <ref>
-```
-
-Then, create the FASTA dict file using GATK: 
-
-```bash
-gatk CreateSequenceDictionary -R Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
-```
-
-4. Download the known indels file we need for base quality score recalibration and its tabix index
-
-```bash
-wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.known_indels.chr22_28650000-28750000.vcf.gz
-
-wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.known_indels.chr22_28650000-28750000.vcf.gz.tbi
-```
 
 
 
@@ -390,10 +375,25 @@ time bwa mem -Y \
     | samtools sort \
     -O BAM \
     -@ 2 \
-    -o TCRBOA2-Tumor.region.bam
+    -o TCRBOA2-Tumor-WEX.region.sorted.bam
 ```
 
 Expected runtime: 60-90 minutes.
+
+#### Indexing our BAMs
+
+To make sure we the tools we call can operate on our BAMs, we need to create BAM indices.
+These are easy to make with `samtools`:
+
+```bash
+samtools index TCRBOA2-Tumor-WEX.region.sorted.bam
+```
+
+Now, write (and run) the command to generate the index for the normal BAM:
+
+```bash
+
+```
 
 #### Duplicate Marking
 
@@ -861,4 +861,63 @@ that the specific program indicates are likely to be of impact.
 may call more variants that differ from the reference in samples from non-European ancestry. This is more likely in germline samples.
 This is another reason it's important to assess a variant's impact by annotation and review.
 
+## Appendix:
 
+### Indexing a reference genome
+
+
+First, consider which reference to use: https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use
+
+(Note, that site may fall out of date).
+
+We'll use GRCh38.
+
+1. Download our reference and create the index files for the exercise:
+
+```bash
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+```
+
+2. Decompress the reference if needed
+
+```bash
+gunzip GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+```
+
+3. Create our references indices using the instructions in the indexing section above (Hint: use the following commands.):
+
+```bash
+samtools faidx <ref>
+```
+
+Example:
+
+```bash
+samtools faidx GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
+```
+
+Then, create the BWA indices. This takes a long time.
+
+```bash
+bwa index <ref>
+```
+
+For our example:
+
+```bash
+bwa index GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
+```
+
+Then, create the FASTA dict file using GATK: 
+
+```bash
+gatk CreateSequenceDictionary -R GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
+```
+
+4. Lastly, download the known indels VCF.gz file we need for base quality score recalibration and its tabix index
+
+```bash
+wget https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+
+wget https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi
+```

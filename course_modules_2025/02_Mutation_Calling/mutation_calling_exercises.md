@@ -1,13 +1,11 @@
-Somatic Mutation Calling
-------------------------
+# Somatic Mutation Calling
 
-# Overview
+## Overview
 In somatic mutation calling, we aim to locate
 and genotype mutations that have occurred in a collection of
 somatic cells (such as a tumor). This involves calling the mutations
 present in those cells and then removing the _germline background_ that
 is present in all cells within the organism.
-
 
 In this practical, we will:
 
@@ -20,12 +18,16 @@ In this practical, we will:
 **NOTE:** The Virtual Machine used in the live courses are all set up - skip directly to
 [Practical](https://github.com/WCSCourses/Cancer_Genome_Analysis23/blob/main/Modules/02_Mutation_Calling/mutation_calling_exercises.md#practical) if you are using a pre-built VM (and not your own Linux machine).
 
-# Set up and configuration
+## Set up and configuration
 
-## Input data
+```{note}
+Note: You can skip this section and go directly to "Practical" if you are using the course VM.
+```
+
+### Input data
 
 When running the course, we host data inside a VM. However, sometimes this data is out-of-date and instructors
-will provide a link to download the updated material. Please ask the course instructors for access if needed. 
+will provide a link to download the updated material. Please ask the course instructors for access if needed.
 Any data provided will be provided via HTTP / FTP and can be downloaded with wget like so:
 
 ```bash
@@ -36,21 +38,18 @@ wget <file>
 In the VM, we have a directory titled `/home/manager/course_data`.
 This directory contains data from the [Texas Cancer Research Biobank Open Access project.](http://stegg.hgsc.bcm.edu/open.html).
 
-
 If you're on your own machine, create a directory named `course_data` and store your data there.
-
 
 We're using whole-eexome sequenced data from Case 002, a woman in her 60s who presented with neuroendocrine carcinoma
 of the pancreas and received no prior treatment.
 
-
 What command would you use to see which files are in the directory?
+
 ```bash
 
 ```
 
 Files in the /home/manager/course_data directory with latest data.
-
 
 The /home/manager/course_data directory contains the FASTQs, BAMs, and example VCFs for this patient's tumor and normal sample.
 As we go through this tutorial, you'll run the commands to generate each of these files, but you can also skip over long-running
@@ -58,6 +57,7 @@ computational tasks since the data needed is already present. As this is standar
 testing and learning other software so long as you follow the data access agreement rules.
 
 ### Backup public data
+
 The following links contain the backup data available publicly.
 Please download these into the `mutation_calling` directory _if you are not using the VM_.
 
@@ -111,7 +111,11 @@ chr22.TCRBOA6-Tumor_2.fastq.gz
 
 The backup files are there in case you don't want to run long-running commands. The FASTQs are present to run the tutorial below.
 
-## Installing IGV
+### Installing IGV
+
+```{note}
+Note: Skip this section if you already have IGV installed.
+```
 
 *How to install IGV on your machine*
 1. Open Firefox
@@ -125,7 +129,12 @@ The backup files are there in case you don't want to run long-running commands. 
 
 ## Installing GATK
 
+```{note}
+Note: skip this section if you already have GATK installed.
+```
+
 GATK is installed in the course VM, but if you need to install it from scratch:
+
 ```bash
 cd ~
 
@@ -138,7 +147,7 @@ unzip gatk-4.2.6.1.zip
 
 The GATK is now installed in `~/gatk-4.2.6.1/`.
 
-## Setting up your environment and running the analysis as a script
+### Setting up your environment and running the analysis as a script
 
 The following BASH commands will help set up our environment to make running
 the tutorial more intuitive. It assumes you have installed GATK in your home directory:
@@ -154,7 +163,11 @@ In addition, a script for the entire alignment, qc, and calling process
 has been integrated into a single BASH script which can be found
 in this repository, named `calling_and_annotation_pipeline.sh`.
 
-## Indexing Reference Genomes
+### Indexing Reference Genomes
+
+```{note}
+Note: Skip this step if you are using the course VM and already have indexed reference genomes
+```
 
 **Note: The references have already been indexed. You do not need to run the below command in the VM.**
 BWA requires an input reference genome as well as several indexes it uses to efficiently align reads. Today, we'll be using the `Homo_sapiens_assembly38.fasta` reference from the Broad Institute. These indexes are provided for you
@@ -163,51 +176,55 @@ in the `~/references/` directory and are also downloadable from the [Broad Resou
 ```bash
 bwa index ~/references/Homo_sapiens_assembly38.fasta
 ```
+
 This command will take a very long time to run on the VM, and we've precomputed the indices, so there's no need to run it again.
 Luckily, it only needs to be run once per reference, and can be reused for every new sample.
 Expected runtime: roughly 1.5 hours.
 
+## Practical
 
-
-# Practical
 Below, we ask some concept and knowledge questions before moving on to analyzing a match tumor-normal pair.
 
 ## Concepts and knowledge questions
 
 1. What is variant calling?
-```
+
+   ```text
 
 
 
-```
+
+   ```
 
 2. Approximately how many variants do we expect for a given normal sample if we know:  
-- the average genome differs from the reference approximately every 1000bp
-- the human genome is roughly 3.2 Billion basepairs in length?
-```
+   - the average genome differs from the reference approximately every 1000bp
+   - the human genome is roughly 3.2 Billion basepairs in length?
 
-
-```
-
-3. Let's say our tumor has a mutation burden of 1.5 mutations per _megabase_. Approximately how many mutations does
-this tumor have in total?
-
-```
+   ```text
 
 
 
-```
+   ```
+
+3. Let's say our tumor has a mutation burden of 1.5 mutations per _megabase_. Approximately how many mutations does this tumor have in total?
+
+   ```text
+
+
+
+   ```
 
 4. To call somatic variants, we do the following:
-- Call all mutations in the tumor
-- Call all mutations in the normal
-- Subtract out the germline background to generate somatic alls.  
+   - Call all mutations in the tumor
+   - Call all mutations in the normal
+   - Subtract out the germline background to generate somatic alls.  
 
-Knowing this, which of the following Venn Diagrams best represents our
-data and the expected number of variants in the germline and somatic VCFs?
-![](images/somatic_venns.png)
+   Knowing this, which of the following Venn Diagrams best represents our
+   data and the expected number of variants in the germline and somatic VCFs?
+   ![](images/somatic_venns.png)
 
-## Preprocessing (read alignment, duplicate marking, sorting, indexing)
+### Preprocessing (read alignment, duplicate marking, sorting, indexing)
+
 Our raw sequencing reads are random pieces of DNA derived from our tumor and normal tissues.
 To make use of them, we need to align our sequences to a reference genome to produce _alignments_.
 This will help us make sense of _where_ each read comes from in the reference and what sites in our
@@ -215,101 +232,105 @@ sample are different, or _variant_, from the reference genome.
 
 We will also perform duplicate marking, base quality score recalibration, sorting, and indexing after alignment.
 These processes will do the following:
+
 1. Remove reads that are optical duplicates (i.e., technical noise) that could bias our variant calls.
 2. Normalize our base quality scores, which helps improve the accuracy of variant calls.
 3. Sort and index our file so we a) save disk space storing it and 2) programs can make use of efficient random access into it.
 
-### Staying organized
+#### Staying organized
+
 We'll run our tutorial in a new directory so we can keep our work organized. We'll use some basic linux commands to set up a directory.
 
-```bash
-cd ~
+   ```bash
+   cd ~
 
-mkdir mutation-calling
-cd mutation-calling
+   mkdir mutation-calling
+   cd mutation-calling
 
-```
+   ```
 
-### There's too much data!
+#### There's too much data!
 
 Our collaborator generously gave us a whole exome sample! However, we don't have the computing power (or, well, time) to process it today. Instead, we're going to
 develop our pipeline using just a small region of this sample's inputs so we don't spend all day working before knowing if we did it right or not.
 
 1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 22. Here's the basic usage of samtools, using `-b` to output a BAM file:
-```bash
-samtools view -o <output BAM> -b <BAM> <region> 
-```
 
-To slice our BAM, we'll do the following:
+   ```bash
+   samtools view -o <output BAM> -b <BAM> <region> 
+   ```
 
-```bash
-samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr22:28650000-28750000
-```
+   To slice our BAM, we'll do the following:
 
-**How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files.)
+   ```bash
+   samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr22:28650000-28750000
+   ```
 
-```
+   **How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files.)
 
-
-```
+   ```text
 
 
-Now, slice the Tumor sample BAM to the same region; make sure to name it using the same convention.
+   ```
 
-```bash
+   Now, slice the Tumor sample BAM to the same region; make sure to name it using the same convention.
 
-## Fill out the missing portions of this command
-samtools view -o ??? -b ??? chr22:28650000-28750000
-```
+   ```bash
+
+   ## Fill out the missing portions of this command
+   samtools view -o ??? -b ??? chr22:28650000-28750000
+   ```
 
 2. Convert our BAM to FASTQ so we can realign our reads. We can use the `samtools fastq` command for this:
-```bash
-samtools fastq -1 TCRBOA2-N-WEX.region_1.fastq -2 TCRBOA2-N-WEX.region_2.fastq -0 /dev/null -s /dev/null TCRBOA2-N-WEX.region.bam
-```
 
-We should now have two FASTQ files for our normal sample - go ahead and do the same for our tumor.
+   ```bash
+   samtools fastq -1 TCRBOA2-N-WEX.region_1.fastq -2 TCRBOA2-N-WEX.region_2.fastq -0 /dev/null -s /dev/null TCRBOA2-N-WEX.region.bam
+   ```
+
+   We should now have two FASTQ files for our normal sample - go ahead and do the same for our tumor.
 
 
 3. Download our reference and create the index files for the exercise:
 
-```bash
-wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
-```
+   ```bash
+   wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
+   ```
 
-And create our references indices using the instructions in the indexing section above (Hint: use the following commands.):
+   And create our references indices using the instructions in the indexing section above (Hint: use the following commands.):
 
-```bash
-samtools faidx <ref>
-```
+   ```bash
+   samtools faidx <ref>
+   ```
 
-```bash
-bwa index <ref>
-```
+   ```bash
+   bwa index <ref>
+   ```
 
-Then, create the FASTA dict file using GATK: 
+   Then, create the FASTA dict file using GATK: 
 
-```bash
-gatk CreateSequenceDictionary -R Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
-```
+   ```bash
+   gatk CreateSequenceDictionary -R Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
+   ```
 
 4. Download the known indels file we need for base quality score recalibration and its tabix index
 
-```bash
-wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.known_indels.chr22_28650000-28750000.vcf.gz
+   ```bash
+   wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.known_indels.chr22_28650000-28750000.vcf.gz
+   ```
 
-wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.known_indels.chr22_28650000-28750000.vcf.gz.tbi
-```
+    Also download its tabix index to allow random access:
 
-
+    ```bash
+   wget https://r2-public-worker.atacama.workers.dev/Homo_sapiens_assembly38.known_indels.chr22_28650000-28750000.vcf.gz.tbi
+   ```
 
 ### Alignment
-We use a program called [Burrows-Wheeler Alginer (BWA)](https://github.com/lh3/bwa) for aligning reads. While there are many, many programs for sequence alignment,
+
+We use a program called [Burrows-Wheeler Aligner (BWA)](https://github.com/lh3/bwa) for aligning reads. While there are many, many programs for sequence alignment,
 BWA is generally considered to be both fast and accurate and is widely used within the community. It is also free and open-source.
 
-
 BWA contains several algorithms for read alignment. In this tutorial, we'll use the `mem` algorithm, which leverages Maximal Exact Matches
-and clever heuristics to be both faster and more accurate than the `aln/samse/sampe` and `bwasw` algorithms. **Remember**, you would normally need to first index your reference genome with `bwa index` to map reads; we have already done this in the VM, but you can learn to do so in the setup section.
-
+and clever heuristics to be both faster and more accurate than the `aln`, `samse`, `sampe` and `bwasw` algorithms for high-quality reads. **Remember**, you would normally need to first index your reference genome with `bwa index` to map reads; we have already done this in the VM, but you can learn to do so in the setup section.
 
 Once we have our indices, we are ready to align reads. Remember, we'll use the mem algorithm. The basic input form of BWA is like so:
 
@@ -323,18 +344,19 @@ to see a full list of options:
 bwa mem
 ```
 
-We'll tune the performance of BWA by using the following parameters, such as the number of processing threads and the 
-number of reads we keep in memory at any given time. 
-
-- We'll also pass the `-Y ` flag to enable softclipping on supplementary
-alignments. 
-- `-K ` tells BWA how many reads to read in per batch, which affects performance of variant calling and insert size
-calculation. However, the default value is usually fine; on our VM, since we have less RAM, we use a smaller value.
-- We will also add a Read Group to our data. This step is **essential** for making our BAM useful in downstream calling - it annotates
-each read with the Read Group so that callers know how to use reads in their statistical models. The Read Group takes the form
-of a string so we must enclose in single quotes. The read group is specified with the `-R ` argument.
+We'll tune the performance of BWA by using the following parameters
 
 
+| Parameter |  Description |
+|-|-|
+| -@ \<int\> | The number of threads used for alignment. |
+| -Y | Enables softclipping on supplementary alignments | 
+| -K \<int\> | Sets how many reads to load per batch, which affects performance and the calculation of insert size. **Note**: the default value is usually fine, but on systems with little RAM, it may be necessary to use a smaller value. |
+| -R \<string\> | Read group information. This string is **essential** in downstream analyses, as it helps inform programs about the sample of origin for our reads. |
+
+```{note}
+Note: You may notice we pipe the output of BWA into SAMtools sort. A brief description of why follows in the next section.
+```
 
 To align our reads, we run the following command from inside the analysis directory. We prefix it with `time` to report how long the command takes:
 
@@ -351,12 +373,13 @@ time bwa mem -Y \
     -o TCRBOA2-Normal.region.bam
 ```
 
-Expected runtime: 30-50 minutes for whole exome chr22 (Very fast for sample).
+Expected runtime: 30-50 minutes for whole exome chr22; very fast for targeted data.
+
+### Sorting our BAM file
 
 The `samtools sort` command will write a sorted BAM file (since the default output of BWA is unsorted SAM).
 Sorting means that alignments appear in the file in their order along the genome (i.e., the 1st position of chromosome 1 is
-at the start of the file and the last alignment in the file will be on the last chromosome). This makes it possible to 
-index our BAM later.
+at the start of the file and the last alignment in the file will be on the last chromosome). This makes it possible to index our BAM later.
 
 Let's check if our BAM is valid - we can do so with `samtools quickcheck`:
 
@@ -370,15 +393,14 @@ This command should return nothing and report nothing if everything is in order.
 
 Are there other commands we might use for BAM quality control?
 
-```
+```text
 
 
 
 ```
 
-
-Lastly, we need to do the same process for our tumor. This will take longer to align - expect roughly an hour (but
-remember, these files have already been provided for you).
+Lastly, we need to do the same process for our tumor. This would take longer to align because our tumor was sequenced at higher depth - expect roughly an hour (
+**remember, these files have already been provided for you and you can avoid these long-running steps**).
 
 ```bash
 time bwa mem -Y \
@@ -425,21 +447,21 @@ Expected runtime: 5 minutes per sample
 
 The MarkDuplicates tool prints some statistics to stdout / stderr when it's finished. How long did the run take?
 
-```
+```text
 
 
 ```
 
 How many unmapped reads were present? (hint: check the metrics.txt file)
 
-```
+```text
 
 
 ```
 
 What percent of reads were optical duplicates?
 
-```
+```text
 
 
 ```
@@ -450,7 +472,7 @@ The next step in the process is to generate a Base Quality Score Recalibration (
 The BQSR process will normalize the quality scores within a BAM file based on a set of known variants
 (especially indels), resulting in more accurate variant calls downstream.
 
-
+First, we will do this for our Normal sample:
 
 ```bash
 time gatk BaseRecalibrator \
@@ -461,6 +483,8 @@ time gatk BaseRecalibrator \
     --reference Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
 ```
 
+Then we will do this for our Tumor sample:
+
 ```bash
 time gatk BaseRecalibrator \
     --java-options -Xmx4g \
@@ -470,25 +494,22 @@ time gatk BaseRecalibrator \
     --reference Homo_sapiens_assembly38.chr22_28650000-28750000.fasta
 ```
 
-
-
 Expected runtime: 5 minutes for normal, 10 minutes for tumor.
-
-
 
 What is the name of the read group in the BQSR Report for the normal sample? Note that
 it should be the same as we generated for alignment.
 
-```
+```text
 
 
 
 ```
-
 
 After running the commands to generate the BQSR report, we need to adjust the base qualities within
 our BAM files. We do this by running the `ApplyBQSR` command in GATK. Again, this is a long-running
 command and the output files will be provided.
+
+First, we will run ApplyBQSR for our Normal sample:
 
 ```bash
 ## Apply BQSR to normal BAM
@@ -500,6 +521,8 @@ time gatk ApplyBQSR \
     -O TCRBOA2-Normal.region.markdups.baseRecal.bam
 ```
 
+Next, run the ApplyBQSR step for the Tumor sample:
+
 ```bash
 ## Apply BQSR to tumor BAM
 time gatk ApplyBQSR \
@@ -510,17 +533,12 @@ time gatk ApplyBQSR \
     -O TCRBOA2-Tumor.region.markdups.baseRecal.bam
 ```
 
-## Indexing BAM files
+### Indexing BAM files
 
 To call variants, we'll need to index our BAM files. We can use the `samtools index`
 command to do so:
 
-```bash
-time samtools index TCRBOA2-Tumor.region.markdups.baseRecal.bam
-```
-
-Estimated runtime: 40s
-
+First, we do this for our Normal sample:
 
 ```bash
 time samtools index TCRBOA2-Normal.region.markdups.baseRecal.bam
@@ -528,22 +546,28 @@ time samtools index TCRBOA2-Normal.region.markdups.baseRecal.bam
 
 Estimated runtime: 40s
 
+Next, we'll do this for our Tumor sample:
+
+```bash
+time samtools index TCRBOA2-Tumor.region.markdups.baseRecal.bam
+```
+
+Estimated runtime: 40s
+
 Our BAM index is kind of like the index of a book. What do you think its coordinate system is?
 
-```
+```text
 
 
 
 ```
 
-
-## Variant calling
+### Variant calling
 
 We can now run MuTect2 to call somatic variants in our matched tumor and normal samples.
 
 If you're on the VM, switch to the whole-exome BAMs
-Since we're only interested in chromosome 22 (at least for this analysis), we can 
-tell MuTect2 to only call that interval using `-L chr22`). 
+Since we're only interested in chromosome 22 (at least for this analysis), we can tell MuTect2 to only call that interval using `-L chr22`).
 
 ```bash
 gatk Mutect2 \
@@ -558,7 +582,8 @@ gatk Mutect2 \
 
 Expected runtime: 30-60 minutes
 
-### Using a PON
+### Using a Panel of Normals
+
 **Note**: We might want to use a PON, such as one of the publicly-available ones at: `https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38%2F;tab=objects?prefix=&forceOnObjectsSortingFiltering=false`
 
 We could download the file like so:
@@ -584,14 +609,19 @@ gatk Mutect2 \
     --output TCRBOA2-Tumor.TCRBOA2-Normal.region.vcf
 ```
 
-
-We now have a somatic VCF file from MuTect2 (in the VM, there should be a backup one in `/home/manager/course_data`). But before we start looking for driver mutations or 
+We now have a somatic VCF file from MuTect2 (in the VM, there should be a backup one in `/home/manager/course_data`). But before we start looking for driver mutations or
 mutational signatures, we should run some basic quality control and assess some of our variants in IGV.
 The following section will give a brief overview of quality control and assessment techniques.
 
+### Filtering variants with GATK FilterMutectCalls
 
+The `FilterMutectCalls` command of the Genome Analysis Toolkit runs a set of default filters to clean our initial variant calls. For more information, see the [FilterMutectCalls documentation](https://gatk.broadinstitute.org/hc/en-us/articles/360036856831-FilterMutectCalls).
 
-## Variant assessment and quality control
+```bash
+TODO
+```
+
+### Variant assessment and quality control
 
 There are many ways to do variant quality control. Below, we demonstrate how to use Integrated Genomics Viewer (IGV),
 which is perhaps the most commonly-used program for analyzing variants in BAMs/VCFs.
@@ -605,14 +635,14 @@ How many variants are in our VCF file?
 (Hint: we can use `grep -c "<pattern>" <file>` to count the number of lines that match a pattern in a file.
 If we want the number of lines that _don't_ match a pattern, we can use `grep -c -v "<pattern>" <file>`).
 
-```
+```text
 
 
 ```
 
 **Hint: we might have chosen a region that isn't mutated in our tumor**
 
-## Manual Review
+### Manual Review
 
 Manual review of variants is an essential step of the variant calling process. While variant callers use complex statistical
 models and clever heuristics, they still very often make erroneous calls (poor specificity) or miss true variants (poor sensitivity).
@@ -649,7 +679,7 @@ here immediately flags it for removal outside of the low allele fraction.
 
 **Question: Can you calculate the VAF for this variant? Do we calculate this in the normal, tumor, or both?**
 
-```
+```text
 
 
 
@@ -657,13 +687,12 @@ here immediately flags it for removal outside of the low allele fraction.
 
 **Question: If we assume that our tumor was sequenced at a depth of 30x and our normal was sequenced at 10X, what can we say about this position and variant?**
 
+```text
+
+
+
 
 ```
-
-
-
-```
-
 
 To better assay the variant, let's look at it in IGV. IGV review is performed in nearly every study. There's a lot of nuance
 and intuition used in determining whether a variant is real or not in IGV. As you view many true variants, take note of what
@@ -674,26 +703,25 @@ We can open up IGV, change the genome to human HG38, and load our files for the 
 bar to navigate to the variant we reviewed above (click the box that is next to the word "Go"; put your position in; click "Go"). We can then click the coverage bars at the location to open up the detailed
 allele fraction view (See the track that says our sample name and then "Coverage"? You can click specific locations in this track in any sample). The resulting IGV screen will look roughly like the screenshot below:
 
-![](images/igv_3.png)
+![](images/igv_3.png "An IGV screenshot")
 
 Looking at this variant in IGV, we can see that there's an insertion at the same location in the normal. For some reason,
 mutect2 doesn't seem to have accounted for this well. There's also only a small number of reads supporting the allele in 
 the tumor, and one read supporting the alt in the normal. Together, this evidence indicates that the variant is a false positive.
 Let's summarize:
+
 - Low allele depth in tumor. In 30X data, a minimum of AD = 7 or so is a common hard filter.
 - Alt-supporting read in normal. This could be due to tumor-in-normal contamination, but since our normal is a blood sample,
 this is not the case.
 - Low allele fraction. This could be due to low purity, but we know the purity of the tumor is high.
 
-
 Now, let's examine a variant that we expect is real:
 
-![](images/igv_4.png)
-
+![](images/igv_4.png "An IGV Screenshot")
 
 What are some characteristics of this variant that indicate we should believe it's real?
 
-```
+```text
 
 
 
@@ -706,27 +734,30 @@ What are some characteristics of this variant that indicate we should believe it
 
 Here's another variant:
 
-![](images/TERT.png)
+![](images/TERT.png "A screenshot showing the TERT promoter")
 
 Why might this variant be important (hint: look at the bottom of IGV)?
-```
+
+```text
 
 
 
 ```
 
 What is the approximate purity of our tumor if:
+
 - We have three reads with the ALT allele
 - Our call was made as a heterozygous variant
 - The total number of reads at this location is 10
   
-```
+```text
 
 
 ```
 
 
 **Use IGV to reproduce the screenshot above:**
+
 1. Open IGV
 2. Load your BAM files using the File menu. We'll use the whole-exome BAMs our collaborator shared with us in the `course_data` directory.
 3. You can also load your VCF - try it!
@@ -768,7 +799,7 @@ tar xvzf funcotator_dataSources.v1.7.20200521s.tar.gz
 
 Funcotator MAFs have a large header describing the fields. Below, you can find two example variants (these come from the TCRBOA6 sample, whose MAF is: chr22.TCRBOA6-Tumor.TCRBOA6-Normal.funcotated.maf) **hint**: try copying this text to a file, and viewing it with `less`:
 
-```
+```text
 Hugo_Symbol	Entrez_Gene_Id	Center	NCBI_Build	Chromosome	Start_Position	End_Position	Strand	Variant_Classification	Variant_Type	Reference_Allele	Tumor_Seq_Allele1	Tumor_Seq_Allele2	dbSNP_RS	dbSNP_Val_Status	Tumor_Sample_Barcode	Matched_Norm_Sample_Barcode	Match_Norm_Seq_Allele1	Match_Norm_Seq_Allele2	Tumor_Validation_Allele1	Tumor_Validation_Allele2	Match_Norm_Validation_Allele1	Match_Norm_Validation_Allele2	Verification_Status	Validation_Status	Mutation_Status	Sequencing_Phase	Sequence_Source	Validation_Method	Score	BAM_File	Sequencer	Tumor_Sample_UUID	Matched_Norm_Sample_UUID	Genome_Change	Annotation_Transcript	Transcript_Strand	Transcript_Exon	Transcript_Position	cDNA_Change	Codon_Change	Protein_Change	Other_Transcripts	Refseq_mRNA_Id	Refseq_prot_Id	SwissProt_acc_Id	SwissProt_entry_Id	Description	UniProt_AApos	UniProt_Region	UniProt_Site	UniProt_Natural_Variations	UniProt_Experimental_Info	GO_Biological_Process	GO_Cellular_Component	GO_Molecular_Function	COSMIC_overlapping_mutations	COSMIC_fusion_genes	COSMIC_tissue_types_affected	COSMIC_total_alterations_in_gene	Tumorscape_Amplification_Peaks	Tumorscape_Deletion_Peaks	TCGAscape_Amplification_Peaks	TCGAscape_Deletion_Peaks	DrugBank	ref_context	gc_content	CCLE_ONCOMAP_overlapping_mutations	CCLE_ONCOMAP_total_mutations_in_gene	CGC_Mutation_Type	CGC_Translocation_Partner	CGC_Tumor_Types_Somatic	CGC_Tumor_Types_Germline	CGC_Other_Diseases	DNARepairGenes_Activity_linked_to_OMIM	FamilialCancerDatabase_Syndromes	MUTSIG_Published_Results	OREGANNO_ID	OREGANNO_Values	tumor_f	t_alt_count	t_ref_count	n_alt_count	n_ref_count	Gencode_34_secondaryVariantClassification	Achilles_Top_Genes	CGC_Name	CGC_GeneID	CGC_Chr	CGC_Chr_Band	CGC_Cancer_Somatic_Mut	CGC_Cancer_Germline_Mut	CGC_Cancer_Syndrome	CGC_Tissue_Type	CGC_Cancer_Molecular_Genetics	CGC_Other_Germline_Mut	ClinVar_VCF_AF_ESP	ClinVar_VCF_AF_EXAC	ClinVar_VCF_AF_TGP	ClinVar_VCF_ALLELEID	ClinVar_VCF_CLNDISDB	ClinVar_VCF_CLNDISDBINCL	ClinVar_VCF_CLNDN	ClinVar_VCF_CLNDNINCL	ClinVar_VCF_CLNHGVS	ClinVar_VCF_CLNREVSTAT	ClinVar_VCF_CLNSIG	ClinVar_VCF_CLNSIGCONF	ClinVar_VCF_CLNSIGINCL	ClinVar_VCF_CLNVC	ClinVar_VCF_CLNVCSO	ClinVar_VCF_CLNVI	ClinVar_VCF_DBVARID	ClinVar_VCF_GENEINFO	ClinVar_VCF_MC	ClinVar_VCF_ORIGIN	ClinVar_VCF_RS	ClinVar_VCF_SSR	ClinVar_VCF_ID	ClinVar_VCF_FILTER	CosmicFusion_fusion_id	DNARepairGenes_Chromosome_location_linked_to_NCBI_MapView	DNARepairGenes_Accession_number_linked_to_NCBI_Entrez	Familial_Cancer_Genes_Synonym	Familial_Cancer_Genes_Reference	Gencode_XHGNC_hgnc_id	HGNC_HGNC_ID	HGNC_Status	HGNC_Locus_Type	HGNC_Locus_Group	HGNC_Previous_Symbols	HGNC_Previous_Name	HGNC_Synonyms	HGNC_Name_Synonyms	HGNC_Chromosome	HGNC_Date_Modified	HGNC_Date_Symbol_Changed	HGNC_Date_Name_Changed	HGNC_Accession_Numbers	HGNC_Enzyme_IDs	HGNC_Ensembl_Gene_ID	HGNC_Pubmed_IDs	HGNC_RefSeq_IDs	HGNC_Gene_Family_ID	HGNC_Gene_Family_Name	HGNC_CCDS_IDs	HGNC_Vega_ID	HGNC_OMIM_ID(supplied_by_OMIM)	HGNC_RefSeq(supplied_by_NCBI)	HGNC_UniProt_ID(supplied_by_UniProt)	HGNC_Ensembl_ID(supplied_by_Ensembl)	HGNC_UCSC_ID(supplied_by_UCSC)	Oreganno_Build	Simple_Uniprot_alt_uniprot_accessions	dbSNP_ASP	dbSNP_ASS	dbSNP_CAF	dbSNP_CDA	dbSNP_CFL	dbSNP_COMMON	dbSNP_DSS	dbSNP_G5	dbSNP_G5A	dbSNP_GENEINFO	dbSNP_GNO	dbSNP_HD	dbSNP_INT	dbSNP_KGPhase1	dbSNP_KGPhase3	dbSNP_LSD	dbSNP_MTP	dbSNP_MUT	dbSNP_NOC	dbSNP_NOV	dbSNP_NSF	dbSNP_NSM	dbSNP_NSN	dbSNP_OM	dbSNP_OTH	dbSNP_PM	dbSNP_PMC	dbSNP_R3	dbSNP_R5	dbSNP_REF	dbSNP_RV	dbSNP_S3D	dbSNP_SAO	dbSNP_SLO	dbSNP_SSR	dbSNP_SYN	dbSNP_TOPMED	dbSNP_TPA	dbSNP_U3	dbSNP_U5	dbSNP_VC	dbSNP_VP	dbSNP_WGT	dbSNP_WTD	dbSNP_dbSNPBuildID	dbSNP_ID	dbSNP_FILTER	HGNC_Entrez_Gene_ID(supplied_by_NCBI)	dbSNP_RSPOS	dbSNP_VLD	AS_SB_TABLE	AS_UNIQ_ALT_READ_COUNT	CONTQ	DP	ECNT	GERMQ	MBQ	MFRL	MMQ	MPOS	NALOD	NCount	NLOD	OCM	PON	POPAF	ROQ	RPA	RU	SEQQ	STR	STRANDQ	STRQ	TLOD
 Unknown		__UNKNOWN__	hg38	chr22	10573224	10573225	+	IGR	INS	-	-	T	1429893402		__UNKNOWN__	__UNKNOWN__	T	T	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	NA	NA	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	g.chr22:10573224_10573225insT	no_transcript													__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__								__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__		CAAACTGACCTTATTTTTTT	0.3075	__UNKNOWN__	__UNKNOWN__								__UNKNOWN__			0.263	5	16	0	9																																																																							true	false		false	false		false	false	false		false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	false	0	false	0	false	0.99997610856269113,0.00002389143730886	false	false	false	DIV	0x050000000005000002000200	1	false	151	rs1429893402			10573224	false	[6, 19|3, 2]			30	1		[35, 35]	[546, 354]	[40, 40]	38	0.997		2.66			6.00		[2, 3]	T		true			10.46
 CHEK2	11200	__UNKNOWN__	hg38	chr22	28687974	28687974	+	Missense_Mutation	SNP	G	G	C	200432447	byFrequency	__UNKNOWN__	__UNKNOWN__	G	G	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	NA	NA	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	g.chr22:28687974G>C	ENST00000405598.5	-	16	1747	c.1555C>G	c.(1555-1557)Cga>Gga	p.R519G	CHEK2_ENST00000650281.1_Missense_Mutation_p.R519G|CHEK2_ENST00000404276.6_Missense_Mutation_p.R519G|CHEK2_ENST00000382580.6_Missense_Mutation_p.R562G|CHEK2_ENST00000402731.5_Missense_Mutation_p.R490G|CHEK2_ENST00000403642.5_Missense_Mutation_p.R428G|CHEK2_ENST00000649563.1_Missense_Mutation_p.R298G|CHEK2_ENST00000348295.7_Missense_Mutation_p.R490G			O96017	CHK2_HUMAN	checkpoint kinase 2	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	cellular protein catabolic process (GO:0044257)|cellular response to DNA damage stimulus (GO:0006974)|DNA damage checkpoint (GO:0000077)|DNA damage induced protein phosphorylation (GO:0006975)|double-strand break repair (GO:0006302)|G2/M transition of mitotic cell cycle (GO:0000086)|intrinsic apoptotic signaling pathway in response to DNA damage (GO:0008630)|positive regulation of transcription, DNA-templated (GO:0045893)|protein autophosphorylation (GO:0046777)|protein phosphorylation (GO:0006468)|protein stabilization (GO:0050821)|regulation of protein catabolic process (GO:0042176)|regulation of transcription, DNA-templated (GO:0006355)|replicative senescence (GO:0090399)|response to gamma radiation (GO:0010332)|signal transduction in response to DNA damage (GO:0042770)|signal transduction involved in intra-S DNA damage checkpoint (GO:0072428)|spindle assembly involved in mitosis (GO:0090307)|transcription, DNA-templated (GO:0006351)	nucleoplasm (GO:0005654)|PML body (GO:0016605)	ATP binding (GO:0005524)|identical protein binding (GO:0042802)|metal ion binding (GO:0046872)|protein homodimerization activity (GO:0042803)|protein kinase binding (GO:0019901)|protein serine/threonine kinase activity (GO:0004674)|ubiquitin protein ligase binding (GO:0031625)			NS(1)|biliary_tract(27)|breast(269)|central_nervous_system(78)|haematopoietic_and_lymphoid_tissue(148)|kidney(246)|large_intestine(175)|lung(378)|oesophagus(3)|ovary(179)|pancreas(31)|prostate(62)|salivary_gland(174)|skin(44)|soft_tissue(22)|stomach(176)|testis(13)|upper_aerodigestive_tract(121)	2147	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__	__UNKNOWN__		GGCCGCTTTCGACTAGTAGAA	0.4114713216957606	__UNKNOWN__	__UNKNOWN__	F			breast 		Effector kinases CHEK1 , CHEK2		__UNKNOWN__			0.078	3	46	0	23			CHK2 checkpoint homolog (S. pombe)	11200	22	22q12.1		yes	familial breast cancer	E	Rec																											22q12.1	NM_007194			CR456418	HGNC:16627	Approved	gene with protein product	protein-coding gene	RAD53	"CHK2 (checkpoint, S.pombe) homolog", "CHK2 checkpoint homolog (S. pombe)"	CDS1, CHK2, HuCds1, PP1425, bA444G7		22q12.1	2017-03-24	2001-09-27	2011-11-11	AF086904		ENSG00000183765	9836640, 10097108	NM_001005735			CCDS13843, CCDS13844, CCDS33629	OTTHUMG00000151023	604373	NM_001005735	O96017	ENSG00000183765	uc003adu.2		A8K3Y9|B7ZBF3|B7ZBF4|B7ZBF5|Q6QA03|Q6QA04|Q6QA05|Q6QA06|Q6QA07|Q6QA08|Q6QA10|Q6QA11|Q6QA12|Q6QA13|Q9HBS5|Q9HCQ8|Q9UGF0|Q9UGF1	true	false		false	false		false	false	false	CHEK2:11200	false	false	false	false	false	true	false	false	false	false	false	true	true	false	false	true	true	false	false	true	false	true	1	false	0	false	0.99794533639143730,0.00000796381243628,0.00204669979612640	false	false	false	SNV	0x050268000e05040002100100	1	false	137	rs200432447		11200	28687974	true	[26, 43|2, 1]			75	2		[33, 34]	[448, 485]	[60, 40]	39	1.39		6.87			6.00								7.10
@@ -777,14 +808,15 @@ CHEK2	11200	__UNKNOWN__	hg38	chr22	28687974	28687974	+	Missense_Mutation	SNP	G	G
 
 **Question:** Which of these fields seem important?
 
-```
+```text
 
 
 
 ```
 
 **Question:** What gene is the second variant in?
-```
+
+```text
 
 
 
@@ -793,7 +825,7 @@ CHEK2	11200	__UNKNOWN__	hg38	chr22	28687974	28687974	+	Missense_Mutation	SNP	G	G
 
 **Question:** What type of variant is the first? And the second?
 
-```
+```text
 
 
 
@@ -801,7 +833,7 @@ CHEK2	11200	__UNKNOWN__	hg38	chr22	28687974	28687974	+	Missense_Mutation	SNP	G	G
 
 **Question:** What characteristics of the second variant make it especially important for review and clinical consideration?
 
-```
+```text
 
 
 
@@ -810,7 +842,8 @@ CHEK2	11200	__UNKNOWN__	hg38	chr22	28687974	28687974	+	Missense_Mutation	SNP	G	G
 ```
 
 
-## Alternative: Variant annotation with VEP
+### Alternative: Variant annotation with VEP
+
 There are many programs for annotating VCF files. Some of the most common ones include the Variant Effect Predictor (VEP), AnnoVar, snpsift, and the GATK Funcotator program we used above. VEP is likely the most commonly used and is a convenient alternative to Funcotator
 because it includes a web interface; however, VEP does not output MAF format. If you want to work with VCF though, you can access
 the VEP Web Interface at the following link:
@@ -843,3 +876,10 @@ may call more variants that differ from the reference in samples from non-Europe
 This is another reason it's important to assess a variant's impact by annotation and review.
 
 
+## What's Next?
+
+After you've finished aligning reads and calling, filtering, and reviewing variants, there are various next steps. At this point it is common to do some of the following analyses:
+
+- Generate mutational signatures
+- Determine any driver mutations present
+- Integrate your sample with other samples from your study to look at landscapes and patterns

@@ -328,7 +328,7 @@ time bwa mem -Y \
     -t 2 \
     -K 100000 \
     -R "@RG\tID:TCRBOA2-Normal-RG1\tLB:lib1\tPL:Illumina\tSM:TCRBOA2-Normal\tPU:TCRBOA2-Normal-RG1" \
-    Homo_sapiens_assembly38.chr22_28650000-28750000.fasta \
+    ../references/reference.fasta \
     TCRBOA2-N-WEX.region_1.fastq TCRBOA2-N-WEX.region_2.fastq \
     | samtools sort \
     -O BAM \
@@ -370,7 +370,7 @@ time bwa mem -Y \
     -t 2 \
     -K 100000 \
     -R "@RG\tID:TCRBOA2-Tumor-RG1\tLB:lib1\tPL:Illumina\tSM:TCRBOA2-Tumor\tPU:TCRBOA2-Tumor-RG1" \
-    Homo_sapiens_assembly38.chr22_28650000-28750000.fasta \
+    ../references/reference.fasta \
     TCRBOA2-T-WEX.region_1.fastq TCRBOA2-T-WEX.region_2.fastq \
     | samtools sort \
     -O BAM \
@@ -542,8 +542,8 @@ Our BAM index is kind of like the index of a book. What do you think its coordin
 We can now run MuTect2 to call somatic variants in our matched tumor and normal samples.
 
 If you're on the VM, switch to the whole-exome BAMs
-Since we're only interested in chromosome 22 (at least for this analysis), we can 
-tell MuTect2 to only call that interval using `-L chr22`). 
+Since we're only interested in chromosome 1 (at least for this analysis), we can 
+tell MuTect2 to only call that interval using `-L chr1`). 
 
 ```bash
 gatk Mutect2 \
@@ -574,13 +574,13 @@ Then, pass the PON to mutect:
 ```bash
 ## Note the addition of the --panel-of-normals flag
 gatk Mutect2 \
-    -R Homo_sapiens_assembly38.chr22_28650000-28750000.fasta \
+    -R ../references/reference.fasta \
     --panel-of-normals 1000g_pon.hg38.vcf.gz \
     --input TCRBOA2-Tumor.region.markdups.baseRecal.bam \
     --tumor-sample TCRBOA2-Tumor \
     --input TCRBOA2-Normal.region.markdups.baseRecal.bam \
     --normal-sample TCRBOA2-Normal \
-    -L chr22 \
+    -L chr1 \
     --output TCRBOA2-Tumor.TCRBOA2-Normal.region.vcf
 ```
 

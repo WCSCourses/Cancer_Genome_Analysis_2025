@@ -17,7 +17,7 @@ We will now be using the TCGA-BLCA data in maf format to generate our own oncopl
 First we need to set the directory were we will be working.
 
 ```{r}
-setwd("/home/manager/data/Driver_detection-20220823T163817Z-001/Driver_detection/")
+getwd()
 ```
 
 Now, we'll call the maftools package.
@@ -171,8 +171,8 @@ An important thing to consider for these plots is that to be able to create them
 This is not the case for this practical, but it is common to have per sample mafs. In these cases you can merge them together using maftools and create your plots as above. If you need to merge several maf files you can use the following commands.
 
 ```{r}
-mafs = list.files(path = "/directory/maf_files/", pattern = "*.\\.maf$", full.names =TRUE)
-all_samples = merge_mafs(mafs = mafs)
+#mafs = list.files(path = "/directory/maf_files/", pattern = "*.\\.maf$", full.names =TRUE)
+#all_samples = merge_mafs(mafs = mafs)
 ```
 
 In this command you must indicate the path to the directory where you have your files. The names will be stored in "mafs" and you can then use this with "merge_mafs" option of maftools. In this example the final merged maf is stored in "all_samples".
@@ -199,16 +199,11 @@ We can use this data to compare the mutational load of our data to the TCGA coho
 To do so we will use the following commmand:
 
 ```{r}
+#install.packages("R.utils") # run this is you need to install the R.utils package first
 BLCA.mutload = tcgaCompare(maf=BLCA, cohortName = 'our_BLCA', logscale =TRUE)
 ```
 
 As we are also working with TCGA data, you can see that our cohort is almost the same as the one included in the maftools package.
-
-We can also compare the genes we have identified with dndscv to other cohort (if they are also altered or not).
-
-```{r}
-tcgaDriverBP(BLCA, genes = c("TP53","PIK3CA","ARID1A", "KMT2D", "RB1"))
-```
 
 ## Plotting variant allele frequencies
 

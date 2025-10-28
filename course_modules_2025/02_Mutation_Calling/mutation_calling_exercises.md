@@ -251,7 +251,7 @@ cd mutation-calling
 Our collaborator generously gave us a whole exome sample! However, we don't have the computing power (or, well, time) to process it today. Instead, we're going to
 develop our pipeline using just a small region of this sample's inputs so we don't spend all day working before knowing if we did it right or not.
 
-1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 22. Here's the basic usage of samtools, using `-b` to output a BAM file:
+1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 1. Here's the basic usage of samtools, using `-b` to output a BAM file:
 ```bash
 samtools view -o <output BAM> -b <BAM> <region> 
 ```

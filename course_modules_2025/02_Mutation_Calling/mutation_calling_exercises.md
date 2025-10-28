@@ -251,7 +251,7 @@ cd mutation-calling
 Our collaborator generously gave us a whole exome sample! However, we don't have the computing power (or, well, time) to process it today. Instead, we're going to
 develop our pipeline using just a small region of this sample's inputs so we don't spend all day working before knowing if we did it right or not.
 
-1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 22. Here's the basic usage of samtools, using `-b` to output a BAM file:
+1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 1. Here's the basic usage of samtools, using `-b` to output a BAM file:
 ```bash
 samtools view -o <output BAM> -b <BAM> <region> 
 ```
@@ -542,8 +542,8 @@ Our BAM index is kind of like the index of a book. What do you think its coordin
 We can now run MuTect2 to call somatic variants in our matched tumor and normal samples.
 
 If you're on the VM, switch to the whole-exome BAMs
-Since we're only interested in chromosome 22 (at least for this analysis), we can 
-tell MuTect2 to only call that interval using `-L chr22`). 
+Since we're only interested in a specific region on chromosome 1 (at least for this analysis), we can
+tell MuTect2 to only call that interval using `-L chr1:50000000-51000000`).
 
 ```bash
 gatk Mutect2 \
@@ -558,7 +558,11 @@ gatk Mutect2 \
 
 Expected runtime: 30-60 minutes
 
+
 ### Using a PON
+
+**Note**: We don't have to use a panel of normals for the exercises. In general, you should, but the files are large, so it's okay to skip it (just make sure to modify your command).
+
 **Note**: We might want to use a PON, such as one of the publicly-available ones at: `https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38%2F;tab=objects?prefix=&forceOnObjectsSortingFiltering=false`
 
 We could download the file like so:
@@ -574,14 +578,14 @@ Then, pass the PON to mutect:
 ```bash
 ## Note the addition of the --panel-of-normals flag
 gatk Mutect2 \
-    -R Homo_sapiens_assembly38.chr22_28650000-28750000.fasta \
+    -R ../references/reference.fasta \
     --panel-of-normals 1000g_pon.hg38.vcf.gz \
-    --input TCRBOA2-Tumor.region.markdups.baseRecal.bam \
+    --input TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam \
     --tumor-sample TCRBOA2-Tumor \
-    --input TCRBOA2-Normal.region.markdups.baseRecal.bam \
+    --input TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam \
     --normal-sample TCRBOA2-Normal \
     -L chr22 \
-    --output TCRBOA2-Tumor.TCRBOA2-Normal.region.vcf
+    --output TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf
 ```
 
 

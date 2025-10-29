@@ -249,8 +249,8 @@ library(SigProfilerMatrixGeneratorR)
 
 The first step to run SigProfilerMatrixGenerator is **installing a
 reference genome**, that should match the one used for the alignment of
-the next generation sequencing data. We have already preinstalled human
-reference genomes GRCh37 and GRCh38 in the virtual machines, but in case
+the next generation sequencing data. **We have already preinstalled human
+reference genomes GRCh37 and GRCh38 in the virtual machines**, but in case
 you need to install these genomes (or different ones) on a different
 computer you can follow the code below:
 
@@ -300,6 +300,10 @@ input.
 
 ``` r
 library(SigProfilerPlottingR)
+
+#Visualize the mutational profiles for every sample and every SBS
+## SKIP THIS IF YOU ARE ON THE VM - it will likely crash your machine
+
 plotSBS(matrix_path = 'signatures/SPMG/output/SBS/COREAD.SBS96.exome',
         output_path = 'signatures/SPMG/output/SBS/',
         project = 'COREAD',
@@ -987,27 +991,21 @@ variants, metadata subtypes, and signatures activities:
 
 <div class="q_box">
 
-- **Q17.** What is the cause why two samples that have variants in the
-  ED of *POLE* gene do not have activities in the SBS10a and SBS10b
-  signatures? <br>
-  <select class='solveme' data-answer='["no SNP variant"]'>
-  <option></option> <option>benign variant</option> <option>filtering
-  error</option> <option>no SNP variant</option></select>
-- **Q18.** Which are the samples that have variants in the ED POLE gene
+- **Q17.** Which are the samples that have variants in the ED POLE gene
   and have activities signatures as SBS10a and SBS10b but do not have
   assigned subtype in the metada (acts_and_metadata)? <br>
   <select class='solveme' data-answer='["TCGA-AA-3977-01 TCGA-AA-A00N-01"]'>
   <option></option> <option>TCGA-F5-6814-01 TCGA-AA-3510-01</option>
   <option>TCGA-AA-A010-01 TCGA-AG-A002-01</option>
   <option>TCGA-AA-3977-01 TCGA-AA-A00N-01</option></select>
-- **Q19.** What dou you think about two samples with fewer mutations?
+- **Q18.** What do you think about the two samples with fewer mutations?
   <br>
   <select class='solveme' data-answer='["not POLE signature not hypermutated"]'>
   <option></option> <option>could have concomitant DNA repair
   alterations</option> <option>not POLE signature not
   hypermutated</option> <option>KRAS mutated do not have so much
   mutations</option></select>
-- **Q20.** In relation to the paper shared above, which gene do you
+- **Q19.** In relation to the paper shared above, which gene do you
   think may have a mechanism similar to that of POLE. Variants in a
   specific domain and specific mutational signature? <br>
   <select class='solveme' data-answer='["POLD1"]'> <option></option>

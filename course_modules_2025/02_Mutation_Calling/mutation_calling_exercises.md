@@ -18,7 +18,7 @@ In this practical, we will:
 5. Build an intuition for variant quality control.
 
 **NOTE:** The Virtual Machine used in the live courses are all set up - go directly to
-[Practical](https://github.com/WCSCourses/Cancer_Genome_Analysis23/blob/main/Modules/02_Mutation_Calling/mutation_calling_exercises.md#practical) if you are using a pre-built VM (and not your own Linux machine). If you need to set up your own machine / VM, see the appendices at the end of this file.
+[Practical](#practical) if you are using a pre-built VM (and not your own Linux machine). If you need to set up your own machine / VM, see the appendices at the end of this file.
 
 ### On Learning
 
@@ -33,6 +33,7 @@ Remember, learning is an active process and one that works best with spaced repe
 
 You'll need to know how to use the Linux `pwd`, `cd`, and `ls` commands to navigate this tutorial. It is also helpful to have some experience with `samtools`.
 
+**Tip**: you can use the "tab" key with `ls` to autocomplete your command. For example, if you have a directory called "my_directory", and you type `ls my_dir` and hit "tab", this will try to autocomplete the directory name so you don't have to type it out. Two notes: 1) you may have to hit tab twice and 2) if the file or directory does not exist, the autocompletion won't work.
 
 ## Practical
 
@@ -231,17 +232,17 @@ These processes will do the following:
 
 
 ### Staying organized
-We'll run our tutorial in a new directory so we can keep our work organized. We'll use some basic linux commands to set up a directory. **Note**: if you use the public tarball, the directory should already exist.
+We'll run our tutorial in a new directory so we can keep our work organized. We'll use some basic linux commands to set up a directory.
+
+First, check where you are:
 
 ```bash
-cd ~
-
-mkdir mutation-calling
-cd mutation-calling
-
+pwd
 ```
 
-**Stop and Check:** You should now be in a directory named mutation calling in your home directory. To verify this, use the `pwd` command. It should return something like `/home/<your user name here>/mutation-calling`.
+**Stop and Check:** You should now be in a directory named mutation calling in your home directory. To verify this, use the `pwd` command. It should return something like `/home/<your user name here>/mutation_calling`.
+
+If you're not in the `/home/your user name here/mutation_calling`, then you'll need to go up to the instructions above to create that directory.
 
 ### There's too much data!
 
@@ -253,10 +254,10 @@ develop our pipeline using just a small region of this sample's inputs so we don
 1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 1. Here's the basic usage of samtools, using `-b` to output a BAM file:
 
 ```bash
-samtools view -o <output BAM> -b <BAM> <region> 
+samtools view -o <output BAM> -b <input BAM> <optional samtools region> 
 ```
 
-To slice our **normal** BAM, we'll do the following:
+To slice our **normal** BAM, we'll do the following (**note**: you do not need to type the "<" and ">" characters. These are standard annotations to indicate placeholders in linux commands that you'll have to fill in):
 
 ```bash
 samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr1:50000000-51000000
@@ -269,7 +270,11 @@ samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr
 
 ```
 
-**How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files.)
+**How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files. Also remember that you can "pipe" the output of one command to the input of another using the `|` operator.)
+
+For example, to use samtools stats and pipe it to another command, you'd run `samtools stats <MY BAM FILE> | <my other command>`.
+
+**Hint**: the number of sequences in the BAM is equal to the number of reads.
 
 ```
 
@@ -294,7 +299,7 @@ samtools fastq -1 TCRBOA2-N-WEX.region_1.fastq -2 TCRBOA2-N-WEX.region_2.fastq -
 We should now have two FASTQ files for our normal sample - **go ahead and do the same for our tumor** by filling out the following missing command section:
 
 ```bash
-samtools fastq -1 TCRBOA2-T-WEX.region_1.fastq -2 WHAT_SHOULD_MY_READ_2_FILE_BE_CALLED -0 /dev/null -s /dev/null WHAT_IS_THE_INPUT_FILE_NAMED
+samtools fastq -1 TCRBOA2-T-WEX.region_1.fastq -2 <FASTQ 2 NAME> -0 /dev/null -s /dev/null <YOUR INPUT FILE>
 ```
 
 
@@ -319,7 +324,8 @@ and clever heuristics to be both faster and more accurate than the `aln/samse/sa
 Once we have our indices, we are ready to align reads. Remember, we'll use the mem algorithm. The basic input form of BWA is like so:
 
 ```bash
-bwa mem YOUR-REFERENCE-GENOME-FASTA-GOES-HERE YOUR-READ-1-GOES-HERE YOUR-READ-2-GOES-HERE
+# Example command format
+bwa mem <YOUR-REFERENCE-GENOME-FASTA-GOES-HERE> <YOUR-READ-1-GOES-HERE> <YOUR-READ-2-GOES-HERE>
 ```
 
 to see a full list of options:
@@ -347,7 +353,7 @@ time bwa mem -Y \
     -t 2 \
     -K 100000 \
     -R "@RG\tID:TCRBOA2-Normal-RG1\tLB:lib1\tPL:Illumina\tSM:TCRBOA2-Normal\tPU:TCRBOA2-Normal-RG1" \
-    ../references/reference.fasta \
+    ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     TCRBOA2-N-WEX.region_1.fastq TCRBOA2-N-WEX.region_2.fastq \
     | samtools sort \
     -O BAM \

@@ -482,7 +482,7 @@ time gatk BaseRecalibrator \
     --input TCRBOA2-Normal-WEX.region.sorted.markdups.bam \
     --output TCRBOA2-Normal-WEX.region.sorted.markdups.BQSR-REPORT.txt \
     --known-sites ../references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
-    --reference ../references/reference.fasta
+    --reference ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta
 ```
 
 ```bash
@@ -490,8 +490,8 @@ time gatk BaseRecalibrator \
     --java-options -Xmx4g \
     --input TCRBOA2-Tumor-WEX.region.sorted.markdups.bam \
     --output TCRBOA2-Tumor-WEX.region.sorted.markdups.BQSR-REPORT.txt \
-    --known-sites ../references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
-    --reference ../references/reference.fasta
+    --known-sites ~/mutation_calling/exercises_02_mutation_calling/references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
+    --reference ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta
 ```
 
 
@@ -518,7 +518,7 @@ command and the output files will be provided.
 ## Apply BQSR to normal BAM
 time gatk ApplyBQSR \
     --java-options -Xmx4g \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     -I TCRBOA2-Normal-WEX.region.sorted.markdups.bam \
     --bqsr-recal-file TCRBOA2-Normal-WEX.region.sorted.markdups.BQSR-REPORT.txt \
     -O TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam
@@ -528,7 +528,7 @@ time gatk ApplyBQSR \
 ## Apply BQSR to tumor BAM
 time gatk ApplyBQSR \
     --java-options -Xmx4g \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     -I TCRBOA2-Tumor-WEX.region.sorted.markdups.bam \
     --bqsr-recal-file TCRBOA2-Tumor-WEX.region.sorted.markdups.BQSR-REPORT.txt \
     -O TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam

@@ -894,6 +894,8 @@ following questions:
 - **Q15.** Which set of signatures is more prevalent in the `COAD_MSI`
   subtype in comparison to others? <br>
 
+- **Q16.** According to the signature results, which is the DNA repair pathway that seems to be altered and causing the mutational pattern observed in the `COAD_MSI` cases? <br>
+
 </div>
 
 # 9. Additional exercises: Associating signature activities with specific metadata

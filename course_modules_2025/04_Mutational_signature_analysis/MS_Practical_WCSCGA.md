@@ -303,7 +303,6 @@ library(SigProfilerPlottingR)
 
 #Visualize the mutational profiles for every sample and every SBS
 ## SKIP THIS IF YOU ARE ON THE VM - it will likely crash your machine
-
 plotSBS(matrix_path = 'signatures/SPMG/output/SBS/COREAD.SBS96.exome',
         output_path = 'signatures/SPMG/output/SBS/',
         project = 'COREAD',
@@ -599,19 +598,9 @@ questions below:
   signatures. Which is the etiology of the COSMIC signature
   corresponding to the highest contribution to the *de novo* extracted
   signatures SBS96A?
-  <select class='solveme' data-answer='["Defective mismatch repair / MSI"]'>
-  <option></option> <option>Aging</option> <option>Clock-like</option>
-  <option>Tobacco smoking</option> <option>UV light exposure</option>
-  <option>Defective mismatch repair / MSI</option> <option>POLE
-  mutation</option></select>
 
 - **Q12.** Which is the proposed etiology for the COSMIC signatures
   mostly reconstructing SBS96B?
-  <select class='solveme' data-answer='["POLE mutation"]'>
-  <option></option> <option>Aging</option> <option>Clock-like</option>
-  <option>Tobacco smoking</option> <option>UV light exposure</option>
-  <option>Defective mismatch repair / MSI</option> <option>POLE
-  mutation</option></select>
 
 </div>
 
@@ -897,26 +886,13 @@ following questions:
 
 - **Q13.** Which are the most prevalent signatures in the `COAD_POLE`
   subtype? <br>
-  <select class='solveme' data-answer='["POLE signatures (SBS10a, SBS10b)"]'>
-  <option></option> <option>Aging signatures (SBS1, SBS5)</option>
-  <option>MSI signatures (SBS15, SBS44)</option> <option>POLE signatures
-  (SBS10a, SBS10b)</option></select> - **Q14.** According to the
-  signature results, which is the DNA repair associated gene that seems
+  
+- **Q14.** According to the signature results, which is the DNA repair associated gene that seems
   to be mutated and causing the mutational pattern observed in the
-  `COAD_POLE` cases?
-  <input class='solveme nospaces ignorecase' size='4' data-answer='["POLE"]'/> -
-  **Q15.** Which set of signatures is more prevalent in the `COAD_MSI`
+  `COAD_POLE` cases? <br>
+  
+- **Q15.** Which set of signatures is more prevalent in the `COAD_MSI`
   subtype in comparison to others? <br>
-  <select class='solveme' data-answer='["MSI signatures (SBS15, SBS44)"]'>
-  <option></option> <option>Aging signatures (SBS1, SBS5)</option>
-  <option>MSI signatures (SBS15, SBS44)</option> <option>POLE signatures
-  (SBS10a, SBS10b)</option></select> - **Q16.** According to the
-  signature results, which is the DNA repair pathway that seems to be
-  altered and causing the mutational pattern observed in the `COAD_MSI`
-  cases? <br> <select class='solveme' data-answer='["Mismatch repair"]'>
-  <option></option> <option>Homologous recombination</option>
-  <option>Mismatch repair</option> <option>Base excision repair</option>
-  <option>Nucleotide excision repair</option></select>
 
 </div>
 
@@ -992,24 +968,14 @@ variants, metadata subtypes, and signatures activities:
 - **Q17.** Which are the samples that have variants in the ED POLE gene
   and have activities signatures as SBS10a and SBS10b but do not have
   assigned subtype in the metada (acts_and_metadata)? <br>
-  <select class='solveme' data-answer='["TCGA-AA-3977-01 TCGA-AA-A00N-01"]'>
-  <option></option> <option>TCGA-F5-6814-01 TCGA-AA-3510-01</option>
-  <option>TCGA-AA-A010-01 TCGA-AG-A002-01</option>
-  <option>TCGA-AA-3977-01 TCGA-AA-A00N-01</option></select>
+ 
 - **Q18.** What do you think about the two samples with fewer mutations?
   <br>
-  <select class='solveme' data-answer='["not POLE signature not hypermutated"]'>
-  <option></option> <option>could have concomitant DNA repair
-  alterations</option> <option>not POLE signature not
-  hypermutated</option> <option>KRAS mutated do not have so much
-  mutations</option></select>
+  
 - **Q19.** In relation to the paper shared above, which gene do you
   think may have a mechanism similar to that of POLE. Variants in a
   specific domain and specific mutational signature? <br>
-  <select class='solveme' data-answer='["POLD1"]'> <option></option>
-  <option>MUTYH</option> <option>POLD1</option> <option>KRAS</option>
-  <option>NTHL1</option></select>
-
+  
 </div>
 
 # 10. \[OPTIONAL\] Advanced mutational signature analysis using the SigProfiler suite

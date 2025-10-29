@@ -526,7 +526,7 @@ below
 <div class="q_box">
 
 - **Q6.** How many signatures have been selected as the optimal number
-  for our colorectal cancer cohort? **3**
+  for our colorectal cancer cohort? **2**
 
 - **Q7.** Do you think this result would be the same as the one obtained
   using the default (and recommended) parameters for
@@ -537,7 +537,8 @@ below
 
 - **Q8.** Do any of the *de novo* extracted signatures remind you of any
   of the average mutational profiles obtained earlier? Do you think
-  certain subtypes could be enriched in specific signatures?
+  certain subtypes could be enriched in specific signatures? **SBS96B is similar
+  to the CIN_POLE group average**
 
 </div>
 
@@ -583,7 +584,7 @@ questions below:
   showed the *de novo* signatures decomposed into a series of COSMIC
   signatures. Which is the etiology of the COSMIC signature
   corresponding to the highest contribution to the *de novo* extracted
-  signatures SBS96A? **MSI/Defective mismatch repair**
+  signatures SBS96A? **Clock-like signatures, MSI/Defective DNA mismatch repair**
  
 
 - **Q12.** Which is the proposed etiology for the COSMIC signatures

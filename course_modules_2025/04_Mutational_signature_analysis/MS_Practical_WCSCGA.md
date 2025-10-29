@@ -960,14 +960,14 @@ ggplot(data = maf_cbioportal_var_POLE_sign) +
 
 ### **Discussion \#6**
 
-Explore the causatives of specific samples and the relationship between
-variants, metadata subtypes, and signatures activities:
+Using the code and results above, explore the causatives of specific samples and the relationship between
+variants, metadata subtypes, and signatures activities, and answer the questions below:
 
 <div class="q_box">
 
 - **Q17.** Which are the samples that have variants in the ED POLE gene
   and have activities signatures as SBS10a and SBS10b but do not have
-  assigned subtype in the metada (acts_and_metadata)? <br>
+  assigned subtype in the metadata (Hint: Use the code to get samples from specific groups that you learned much earlier)? <br>
  
 - **Q18.** What do you think about the two samples with fewer mutations?
   <br>

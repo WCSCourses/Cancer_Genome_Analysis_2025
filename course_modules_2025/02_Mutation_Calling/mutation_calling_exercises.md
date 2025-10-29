@@ -394,7 +394,7 @@ time bwa mem -Y \
     -t 2 \
     -K 100000 \
     -R "@RG\tID:TCRBOA2-Tumor-RG1\tLB:lib1\tPL:Illumina\tSM:TCRBOA2-Tumor\tPU:TCRBOA2-Tumor-RG1" \
-    ../references/reference.fasta \
+    ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     TCRBOA2-T-WEX.region_1.fastq TCRBOA2-T-WEX.region_2.fastq \
     | samtools sort \
     -O BAM \

@@ -544,11 +544,10 @@ below
   <input class='solveme nospaces' size='1' data-answer='["3"]'/>
 
 - **Q7.** Do you think this result would be the same as the one obtained
-  using the default (and recommended) parameters for
-  SigProfilerExtractor? <select class='solveme' data-answer='["No"]'>
-  <option></option> <option>Yes</option> <option>No</option></select>
-  Why could be the cause for this (considering what has been presented
-  in the lecture)? If you have some time feel free to run
+  using the default (and recommended) parameters for SigProfilerExtractor?
+  What could be the cause for this (considering what has been presented
+  in the lecture)? If you have some extra time feel free to run
+  SigProfilerExtractor again with different parameters.
 
 - **Q8.** Do any of the *de novo* extracted signatures remind you of any
   of the average mutational profiles obtained earlier? Do you think
@@ -589,12 +588,11 @@ questions below:
 
 - **Q9.** How many different variant classes are currently available in
   the COSMIC Mutational Signatures catalogue?
-  <input class='solveme nospaces' size='1' data-answer='["6"]'/>
 
 - **Q10.** The reference mutational signatures have been renormalized to
   different genomes. How many different species are currently supported
-  for the SBS COSMIC reference signatures?
-  <input class='solveme nospaces' size='1' data-answer='["3"]'/>
+  for the SBS COSMIC reference signatures? (Hint: look at the "Downloads" page)
+  
 
 - **Q11.** In the SigProfilerExtractor results, one of the directories
   showed the *de novo* signatures decomposed into a series of COSMIC

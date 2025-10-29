@@ -1,7 +1,7 @@
-Somatic Mutation Calling
-------------------------
+# Somatic Mutation Calling
 
-# Overview
+
+## Overview
 In somatic mutation calling, we aim to locate
 and genotype mutations that have occurred in a collection of
 somatic cells (such as a tumor). This involves calling the mutations
@@ -17,30 +17,85 @@ In this practical, we will:
 4. Look at our variants in IGV to assess their quality.
 5. Build an intuition for variant quality control.
 
-**NOTE:** The Virtual Machine used in the live courses are all set up - skip directly to
-[Practical](https://github.com/WCSCourses/Cancer_Genome_Analysis23/blob/main/Modules/02_Mutation_Calling/mutation_calling_exercises.md#practical) if you are using a pre-built VM (and not your own Linux machine).
+**NOTE:** The Virtual Machine used in the live courses are all set up - go directly to
+[Practical](#practical) if you are using a pre-built VM (and not your own Linux machine). If you need to set up your own machine / VM, see the appendices at the end of this file.
 
-# Set up and configuration
+### On Learning
+
+This tutorial is designed to challenge you. To learn most effectively, embrace the challenge - don't just copy-paste the commands. If you get stuck, try the following:
+
+- If you're attending a live course, raise your hand
+- If you're working through this online on your own, check the existing github issues or google search for your error / issue. If you can't find any help post a new issue on the github.
+
+Remember, learning is an active process and one that works best with spaced repetition. You'll get better with time. Don't be afraid to make mistakes early on.
+
+### Prerequisites
+
+You'll need to know how to use the Linux `pwd`, `cd`, and `ls` commands to navigate this tutorial. It is also helpful to have some experience with `samtools`.
+
+**Tip**: you can use the "tab" key with `ls` to autocomplete your command. For example, if you have a directory called "my_directory", and you type `ls my_dir` and hit "tab", this will try to autocomplete the directory name so you don't have to type it out. Two notes: 1) you may have to hit tab twice and 2) if the file or directory does not exist, the autocompletion won't work.
+
+## Practical
+
+Below, we ask some concept and knowledge questions before moving on to analyzing a match tumor-normal pair.
+
+### Concepts and knowledge questions
+
+1. What is variant calling?
+```
+
+
+
+```
+
+2. Approximately how many variants do we expect for a given normal sample if we know:  
+- the average genome differs from the reference approximately every 1000bp
+- the human genome is roughly 3.2 Billion basepairs in length?
+```
+
+
+```
+
+3. Let's say our tumor has a mutation burden of 1.5 mutations per _megabase_. Approximately how many mutations does
+this tumor have in total?
+
+```
+
+
+
+```
+
+4. To call somatic variants, we do the following:
+- Call all mutations in the tumor
+- Call all mutations in the normal
+- Subtract out the germline background to generate somatic alls.  
+
+Knowing this, which of the following Venn Diagrams best represents our
+data and the expected number of variants in the germline and somatic VCFs?
+![](images/somatic_venns.png)
 
 ## Input data
 
-When running the course, we host data inside a VM. However, sometimes this data is out-of-date and instructors
+When running the course in person, we host data inside a VM. However, sometimes this data is out-of-date and instructors
 will provide a link to download the updated material. Please ask the course instructors for access if needed. 
+
 Any data provided will be provided via HTTP / FTP and can be downloaded with wget like so:
 
 ```bash
-wget <file>
+wget <file path on the remote server>
 ```
 
 In the VM, we have a directory titled `/home/manager/course_data`.
-This directory contains data from the [Texas Cancer Research Biobank Open Access project.](http://stegg.hgsc.bcm.edu/open.html), [originally published in Nature Scientific Reports](https://www.nature.com/articles/sdata201610).
+This directory contains data from the [Texas Cancer Research Biobank Open Access project](http://stegg.hgsc.bcm.edu/open.html), [originally published in Nature Scientific Reports](https://www.nature.com/articles/sdata201610).
 
+If you're on your own machine, create a directory named `course_data` and store your data there. To test if the directory is present:
 
-If you're on your own machine, create a directory named `course_data` and store your data there.
+```bash
+ls $HOME/course_data
+```
 
-
-We're using whole-exome sequenced data from Case 002, a woman in her 60s who presented with neuroendocrine carcinoma
-of the pancreas and received no prior treatment.
+We're using whole-exome sequenced data from Case 002 in the TCRB dataset. This sample was donated by a woman in her 60s who presented with neuroendocrine carcinoma
+of the pancreas and received no prior treatment. Both a normal blood sample and pancreatic tumor tissue were sequenced.
 
 
 What command would you use to see which files are in the directory?
@@ -48,26 +103,41 @@ What command would you use to see which files are in the directory?
 
 ```
 
-Files in the /home/manager/course_data directory with latest data.
 
+As we go through this tutorial, you'll run the commands to generate each of these files, but you can also skip over long-running computational tasks since the data needed is already present.
 
-The /home/manager/course_data directory contains the FASTQs, BAMs, and example VCFs for this patient's tumor and normal sample.
-As we go through this tutorial, you'll run the commands to generate each of these files, but you can also skip over long-running
-computational tasks since the data needed is already present. As this is standard whole-genome data, you can also use this for 
-testing and learning other software so long as you follow the data access agreement rules.
+As this is standard whole-exome data (but a very small slice of the exome), you can also use this for testing and learning other software so long as you follow the data access agreement rules. Note that the chromosome names might differ between this set and the human hg19 / hg38 references.
 
-### Backup public data
+### Public data for this tutorial
+
 The following links contain the backup data available publicly.
 Please download these into the `mutation_calling` directory _if you are not using the VM_.
 
+Let's start from our home directory:
+
 ```bash
-## create a directory in your home directory
+## cd to our home directory
+cd ~
+```
+
+If the course_data directory doesn't exist, create it:
+
+```bash
+## Check if the directory exists
+ls ~/course_data
+
+## if the directory doesn't exist, create it using the mkdir command.
+```
+
+Now, create the directory we'll use specifically for this tutorial. We do this so if we make a mistake we don't overwrite or modify our existing data.
+
+```bash
+## create a directory in your home/$USER/course_data directory
 mkdir mutation_calling
 cd mutation_calling
 ```
 
 **Updated 2025**: The entire tutorial, except for the MAF / huge reference files, now live in a single tarball 🎉 .
-
 
 A compressed tarball of the mutation calling exercise data is graciously hosted by Phileal: `https://public.phileal.com/tutorials/cancer_genome_analysis_2025/exercises_02_mutation_calling.tgz`
 
@@ -75,11 +145,17 @@ To download this:
 
 ```bash
 wget https://public.phileal.com/tutorials/cancer_genome_analysis_2025/exercises_02_mutation_calling.tgz
+```
 
+Then, extract the tarball:
+
+```bash
 tar xvf exercises_02_mutation_calling.tgz
 ```
 
 After untarring these files, check out the directory structure:
+
+**Note**: on some machines, the `tree` command is not installed. Try using a combination of the `ls` and `cd` commands to check out the structure instead if that's the case. Alternatively, you can try installing `tree` by running `sudo apt-get install tree`.
 
 ```bash
 tree exercises_02_mutation_calling
@@ -140,89 +216,6 @@ exercises_02_mutation_calling
 
 The backup files are there in case you don't want to run long-running commands. The FASTQs are present to run the tutorial below.
 
-## Installing IGV
-
-*How to install IGV on your machine*
-1. Open Firefox
-2. Navigate to https://software.broadinstitute.org/software/igv
-3. Navigate to Downloads —> Click IGV for Linux (wait until download completes)
-4. Open Terminal, type:
-
-5. `cd ~/Downloads`
-6. `unzip IGV_Linux_2.14.1_WithJava.zip` to uncompress
-7. `sh ~/Downloads/IGV_Linux_2.14.1/igv.sh` to run IGV
-
-## Installing GATK
-
-GATK is installed in the course VM, but if you need to install it from scratch:
-```bash
-cd ~
-
-wget https://github.com/broadinstitute/gatk/releases/download/4.2.6.1/gatk-4.2.6.1.zip
-
-unzip gatk-4.2.6.1.zip
-
-## The GATK executable is now in the gatk-4.2.6.1 directory
-```
-
-The GATK is now installed in `~/gatk-4.2.6.1/`.
-
-## Setting up your environment and running the analysis as a script
-
-The following BASH commands will help set up our environment to make running
-the tutorial more intuitive. It assumes you have installed GATK in your home directory:
-
-```bash
-gatk_path=~/gatk-4.2.6.1/
-
-## Add GATK to path
-PATH=${PATH}:${gatk_path}
-```
-
-In addition, a script for the entire alignment, qc, and calling process
-has been integrated into a single BASH script which can be found
-in this repository, named `calling_and_annotation_pipeline.sh`.
-
-
-
-# Practical
-Below, we ask some concept and knowledge questions before moving on to analyzing a match tumor-normal pair.
-
-## Concepts and knowledge questions
-
-1. What is variant calling?
-```
-
-
-
-```
-
-2. Approximately how many variants do we expect for a given normal sample if we know:  
-- the average genome differs from the reference approximately every 1000bp
-- the human genome is roughly 3.2 Billion basepairs in length?
-```
-
-
-```
-
-3. Let's say our tumor has a mutation burden of 1.5 mutations per _megabase_. Approximately how many mutations does
-this tumor have in total?
-
-```
-
-
-
-```
-
-4. To call somatic variants, we do the following:
-- Call all mutations in the tumor
-- Call all mutations in the normal
-- Subtract out the germline background to generate somatic alls.  
-
-Knowing this, which of the following Venn Diagrams best represents our
-data and the expected number of variants in the germline and somatic VCFs?
-![](images/somatic_venns.png)
-
 ## Preprocessing (read alignment, duplicate marking, sorting, indexing)
 Our raw sequencing reads are random pieces of DNA derived from our tumor and normal tissues.
 To make use of them, we need to align our sequences to a reference genome to produce _alignments_.
@@ -235,34 +228,53 @@ These processes will do the following:
 2. Normalize our base quality scores, which helps improve the accuracy of variant calls.
 3. Sort and index our file so we a) save disk space storing it and 2) programs can make use of efficient random access into it.
 
+
+
+
 ### Staying organized
 We'll run our tutorial in a new directory so we can keep our work organized. We'll use some basic linux commands to set up a directory.
 
+First, check where you are:
+
 ```bash
-cd ~
-
-mkdir mutation-calling
-cd mutation-calling
-
+pwd
 ```
+
+**Stop and Check:** You should now be in a directory named mutation calling in your home directory. To verify this, use the `pwd` command. It should return something like `/home/<your user name here>/mutation_calling`.
+
+If you're not in the `/home/your user name here/mutation_calling`, then you'll need to go up to the instructions above to create that directory.
 
 ### There's too much data!
 
 Our collaborator generously gave us a whole exome sample! However, we don't have the computing power (or, well, time) to process it today. Instead, we're going to
 develop our pipeline using just a small region of this sample's inputs so we don't spend all day working before knowing if we did it right or not.
 
-1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 22. Here's the basic usage of samtools, using `-b` to output a BAM file:
+**Note**: This section, while good practice, isn't _usually_ necessary in studies. Most times you can just operate on intervals in the full BAM.
+
+1. Slicing our BAM file: let's slice our BAM file to a specific region of chromosome 1. Here's the basic usage of samtools, using `-b` to output a BAM file:
+
 ```bash
-samtools view -o <output BAM> -b <BAM> <region> 
+samtools view -o <output BAM> -b <input BAM> <optional samtools region> 
 ```
 
-To slice our BAM, we'll do the following:
+To slice our **normal** BAM, we'll do the following (**note**: you do not need to type the "<" and ">" characters. These are standard annotations to indicate placeholders in linux commands that you'll have to fill in):
 
 ```bash
 samtools view -o TCRBOA2-N-WEX.region.bam -b ~/course_data/TCRBOA2-N-WEX.bam chr1:50000000-51000000
 ```
 
-**How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files.)
+**Which file is the input and which is the output in this command?**
+
+```
+
+
+```
+
+**How many reads are in the TCRBOA2-N-WEX.region.bam BAM file?** (Hint: you can use the first few lines of output of `samtools stats`, and remember the `head` and `less` commands can help view portions of files. Also remember that you can "pipe" the output of one command to the input of another using the `|` operator.)
+
+For example, to use samtools stats and pipe it to another command, you'd run `samtools stats <MY BAM FILE> | <my other command>`.
+
+**Hint**: the number of sequences in the BAM is equal to the number of reads.
 
 ```
 
@@ -274,32 +286,46 @@ Now, slice the Tumor sample BAM to the same region; make sure to name it using t
 
 ```bash
 
-## Fill out the missing portions of this command
+## Fill out the missing portions of this command, which are marked with "???". Pay attention to which one is an input and which one is an output.
 samtools view -o ??? -b ??? chr1:50000000-51000000
 ```
 
 2. Convert our BAM to FASTQ so we can realign our reads. We can use the `samtools fastq` command for this:
+
 ```bash
 samtools fastq -1 TCRBOA2-N-WEX.region_1.fastq -2 TCRBOA2-N-WEX.region_2.fastq -0 /dev/null -s /dev/null TCRBOA2-N-WEX.region.bam
 ```
 
-We should now have two FASTQ files for our normal sample - go ahead and do the same for our tumor.
+We should now have two FASTQ files for our normal sample - **go ahead and do the same for our tumor** by filling out the following missing command section:
 
+```bash
+samtools fastq -1 TCRBOA2-T-WEX.region_1.fastq -2 <FASTQ 2 NAME> -0 /dev/null -s /dev/null <YOUR INPUT FILE>
+```
+
+
+When you're done, you should have four FASTQ files:
+
+```bash
+TCRBOA2-N-WEX.region_1.fastq
+TCRBOA2-N-WEX.region_2.fastq
+TCRBOA2-T-WEX.region_1.fastq
+TCRBOA2-N-WEX.region_2.fastq
+```
 
 
 ### Alignment
-We use a program called [Burrows-Wheeler Alginer (BWA)](https://github.com/lh3/bwa) for aligning reads. While there are many, many programs for sequence alignment,
+We use a program called [Burrows-Wheeler Aligner (BWA)](https://github.com/lh3/bwa) for aligning reads. While there are many, many programs for sequence alignment,
 BWA is generally considered to be both fast and accurate and is widely used within the community. It is also free and open-source.
 
 
 BWA contains several algorithms for read alignment. In this tutorial, we'll use the `mem` algorithm, which leverages Maximal Exact Matches
-and clever heuristics to be both faster and more accurate than the `aln/samse/sampe` and `bwasw` algorithms. **Remember**, you would normally need to first index your reference genome with `bwa index` to map reads; we have already done this in the VM, but you can learn to do so in the setup section.
-
+and clever heuristics to be both faster and more accurate than the `aln/samse/sampe` and `bwasw` algorithms. **Remember**, you would normally need to first index your reference genome with `bwa index` to map reads; we have already done this in the VM, but you can learn to do so in the appendix section if needed.
 
 Once we have our indices, we are ready to align reads. Remember, we'll use the mem algorithm. The basic input form of BWA is like so:
 
 ```bash
-bwa mem <reference> <inputFASTQ_1> <inputFASTQ_2>
+# Example command format
+bwa mem <YOUR-REFERENCE-GENOME-FASTA-GOES-HERE> <YOUR-READ-1-GOES-HERE> <YOUR-READ-2-GOES-HERE>
 ```
 
 to see a full list of options:
@@ -308,18 +334,17 @@ to see a full list of options:
 bwa mem
 ```
 
-We'll tune the performance of BWA by using the following parameters, such as the number of processing threads and the 
-number of reads we keep in memory at any given time. 
+**IMPORTANT**: Read the next section carefully, especially the bit about the read group.
 
-- We'll also pass the `-Y ` flag to enable softclipping on supplementary
+We'll tune the performance of BWA by using the following parameters, such as the number of processing threads and the number of reads we keep in memory at any given time.
+
+- We'll also pass the `-Y` flag to enable softclipping on supplementary
 alignments. 
-- `-K ` tells BWA how many reads to read in per batch, which affects performance of variant calling and insert size
+- `-K` tells BWA how many reads to read in per batch, which affects performance of variant calling and insert size
 calculation. However, the default value is usually fine; on our VM, since we have less RAM, we use a smaller value.
 - We will also add a Read Group to our data. This step is **essential** for making our BAM useful in downstream calling - it annotates
 each read with the Read Group so that callers know how to use reads in their statistical models. The Read Group takes the form
-of a string so we must enclose in single quotes. The read group is specified with the `-R ` argument.
-
-
+of a string so we must enclose in single quotes. The read group is specified with the `-R` argument.
 
 To align our reads, we run the following command from inside the analysis directory. We prefix it with `time` to report how long the command takes:
 
@@ -328,15 +353,15 @@ time bwa mem -Y \
     -t 2 \
     -K 100000 \
     -R "@RG\tID:TCRBOA2-Normal-RG1\tLB:lib1\tPL:Illumina\tSM:TCRBOA2-Normal\tPU:TCRBOA2-Normal-RG1" \
-    ../references/reference.fasta \
+    ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     TCRBOA2-N-WEX.region_1.fastq TCRBOA2-N-WEX.region_2.fastq \
     | samtools sort \
     -O BAM \
     -@ 2 \
-    -o TCRBOA2-N-WEX.region.sorted.bam
+    -o TCRBOA2-Normal-WEX.region.sorted.bam
 ```
 
-Expected runtime: 30-50 minutes for whole exome chr22 (Very fast for sample).
+**Note**: If your path for the input files don't exist, you might get an error that indicates a missing header. To help debug, try running without the `samtools sort` command and the pipe (`|`) operator.
 
 The `samtools sort` command will write a sorted BAM file (since the default output of BWA is unsorted SAM).
 Sorting means that alignments appear in the file in their order along the genome (i.e., the 1st position of chromosome 1 is
@@ -362,15 +387,14 @@ Are there other commands we might use for BAM quality control?
 ```
 
 
-Lastly, we need to do the same process for our tumor. This will take longer to align - expect roughly an hour (but
-remember, these files have already been provided for you).
+Lastly, we need to do the same process for our tumor.
 
 ```bash
 time bwa mem -Y \
     -t 2 \
     -K 100000 \
     -R "@RG\tID:TCRBOA2-Tumor-RG1\tLB:lib1\tPL:Illumina\tSM:TCRBOA2-Tumor\tPU:TCRBOA2-Tumor-RG1" \
-    ../references/reference.fasta \
+    ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     TCRBOA2-T-WEX.region_1.fastq TCRBOA2-T-WEX.region_2.fastq \
     | samtools sort \
     -O BAM \
@@ -389,7 +413,7 @@ These are easy to make with `samtools`:
 samtools index TCRBOA2-Tumor-WEX.region.sorted.bam
 ```
 
-Now, write (and run) the command to generate the index for the normal BAM:
+Now, **write (and run) the command to generate the index for the normal BAM**:
 
 ```bash
 
@@ -421,7 +445,7 @@ time gatk MarkDuplicates \
     -M TCRBOA2-Tumor-WEX.region.sorted.markdups.metrics.txt
 ```
 
-Expected runtime: 5 minutes per sample
+Expected runtime: <5 minutes per sample
 
 The MarkDuplicates tool prints some statistics to stdout / stderr when it's finished. How long did the run take?
 
@@ -457,8 +481,8 @@ time gatk BaseRecalibrator \
     --java-options -Xmx4g \
     --input TCRBOA2-Normal-WEX.region.sorted.markdups.bam \
     --output TCRBOA2-Normal-WEX.region.sorted.markdups.BQSR-REPORT.txt \
-    --known-sites ../references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
-    --reference ../references/reference.fasta
+    --known-sites ~/mutation_calling/exercises_02_mutation_calling/references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
+    --reference ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta
 ```
 
 ```bash
@@ -466,13 +490,13 @@ time gatk BaseRecalibrator \
     --java-options -Xmx4g \
     --input TCRBOA2-Tumor-WEX.region.sorted.markdups.bam \
     --output TCRBOA2-Tumor-WEX.region.sorted.markdups.BQSR-REPORT.txt \
-    --known-sites ../references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
-    --reference ../references/reference.fasta
+    --known-sites ~/mutation_calling/exercises_02_mutation_calling/references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
+    --reference ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta
 ```
 
 
 
-Expected runtime: 5 minutes for normal, 10 minutes for tumor.
+Expected runtime: <5 minutes for normal, <10 minutes for tumor.
 
 
 
@@ -494,7 +518,7 @@ command and the output files will be provided.
 ## Apply BQSR to normal BAM
 time gatk ApplyBQSR \
     --java-options -Xmx4g \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     -I TCRBOA2-Normal-WEX.region.sorted.markdups.bam \
     --bqsr-recal-file TCRBOA2-Normal-WEX.region.sorted.markdups.BQSR-REPORT.txt \
     -O TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam
@@ -504,7 +528,7 @@ time gatk ApplyBQSR \
 ## Apply BQSR to tumor BAM
 time gatk ApplyBQSR \
     --java-options -Xmx4g \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     -I TCRBOA2-Tumor-WEX.region.sorted.markdups.bam \
     --bqsr-recal-file TCRBOA2-Tumor-WEX.region.sorted.markdups.BQSR-REPORT.txt \
     -O TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam
@@ -519,14 +543,14 @@ command to do so:
 time samtools index TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam
 ```
 
-Estimated runtime: 40s
+Estimated runtime: <40s
 
 
 ```bash
 time samtools index TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam
 ```
 
-Estimated runtime: 40s
+Estimated runtime: <40s
 
 Our BAM index is kind of like the index of a book. What do you think its coordinate system is?
 
@@ -547,35 +571,28 @@ tell MuTect2 to only call that interval using `-L chr1`).
 
 ```bash
 gatk Mutect2 \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     --input TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam \
     --tumor-sample TCRBOA2-Tumor \
     --input TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam \
     --normal-sample TCRBOA2-Normal \
-    -L chr1:50000000-51000000 \
+    -L chr1 \
     --output TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf
 ```
 
-Expected runtime: 30-60 minutes
+Expected runtime: <5 minutes
 
 ### Using a PON
-**Note**: We might want to use a PON, such as one of the publicly-available ones at: `https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38%2F;tab=objects?prefix=&forceOnObjectsSortingFiltering=false`
 
-We could download the file like so:
-
-```bash
-wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz
-
-wget https://storage.googleapis.com/gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz.tbi
-```
+Using a PON can help clean up our calls by removing germline variants observed in normal samples.
 
 Then, pass the PON to mutect:
 
 ```bash
 ## Note the addition of the --panel-of-normals flag
 gatk Mutect2 \
-    -R ../references/reference.fasta \
-    --panel-of-normals 1000g_pon.hg38.vcf.gz \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
+    --panel-of-normals ~/mutation_calling/exercises_02_mutation_calling/references/1000g_pon.hg38.vcf.gz \
     --input TCRBOA2-Tumor.region.markdups.baseRecal.bam \
     --tumor-sample TCRBOA2-Tumor \
     --input TCRBOA2-Normal.region.markdups.baseRecal.bam \
@@ -598,7 +615,7 @@ the GATK package.
 gatk FilterMutectCalls \
     --filtering-stats TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtering_stats \
     --variant TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf \
-    --reference ../references/reference.fasta \
+    --reference ~/mutation_calling/exercises_02_mutation_calling/references/references/reference.fasta \
     --output TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtered.vcf
 ```
 
@@ -606,7 +623,7 @@ Now, we can select just the `PASS` variants using gatk's `SelectVariants` tool.
 
 ```bash
 gatk SelectVariants \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     -V TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtered.vcf \
     --exclude-filtered \
     -O TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.mutect.filtered.pass_only.vcf.gz
@@ -862,6 +879,51 @@ may call more variants that differ from the reference in samples from non-Europe
 This is another reason it's important to assess a variant's impact by annotation and review.
 
 ## Appendix:
+
+
+### Installing IGV
+
+*How to install IGV on your machine*
+1. Open Firefox
+2. Navigate to https://software.broadinstitute.org/software/igv
+3. Navigate to Downloads —> Click IGV for Linux (wait until download completes)
+4. Open Terminal, type:
+
+5. `cd ~/Downloads`
+6. `unzip IGV_Linux_2.14.1_WithJava.zip` to uncompress
+7. `sh ~/Downloads/IGV_Linux_2.14.1/igv.sh` to run IGV
+
+### Installing GATK
+
+GATK is installed in the course VM, but if you need to install it from scratch:
+
+```bash
+cd ~
+
+wget https://github.com/broadinstitute/gatk/releases/download/4.2.6.1/gatk-4.2.6.1.zip
+
+unzip gatk-4.2.6.1.zip
+
+## The GATK executable is now in the gatk-4.2.6.1 directory
+```
+
+The GATK is now installed in `~/gatk-4.2.6.1/`.
+
+## Setting up your environment and running the analysis as a script
+
+The following BASH commands will help set up our environment to make running
+the tutorial more intuitive. It assumes you have installed GATK in your home directory:
+
+```bash
+gatk_path=~/gatk-4.2.6.1/
+
+## Add GATK to path
+PATH=${PATH}:${gatk_path}
+```
+
+In addition, a script for the entire alignment, qc, and calling process
+has been integrated into a single BASH script which can be found
+in this repository, named `calling_and_annotation_pipeline.sh`.
 
 ### Indexing a reference genome
 

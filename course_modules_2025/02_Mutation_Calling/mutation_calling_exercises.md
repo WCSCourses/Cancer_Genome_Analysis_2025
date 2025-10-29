@@ -358,7 +358,7 @@ time bwa mem -Y \
     | samtools sort \
     -O BAM \
     -@ 2 \
-    -o TCRBOA2-N-WEX.region.sorted.bam
+    -o TCRBOA2-Normal-WEX.region.sorted.bam
 ```
 
 **Note**: If your path for the input files don't exist, you might get an error that indicates a missing header. To help debug, try running without the `samtools sort` command and the pipe (`|`) operator.

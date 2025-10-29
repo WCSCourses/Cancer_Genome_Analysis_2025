@@ -481,7 +481,7 @@ time gatk BaseRecalibrator \
     --java-options -Xmx4g \
     --input TCRBOA2-Normal-WEX.region.sorted.markdups.bam \
     --output TCRBOA2-Normal-WEX.region.sorted.markdups.BQSR-REPORT.txt \
-    --known-sites ../references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
+    --known-sites ~/mutation_calling/exercises_02_mutation_calling/references/Homo_sapiens_assembly38.known_indels.chr1_50000000_51000000.vcf.gz \
     --reference ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta
 ```
 
@@ -571,7 +571,7 @@ tell MuTect2 to only call that interval using `-L chr1`).
 
 ```bash
 gatk Mutect2 \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     --input TCRBOA2-Tumor-WEX.region.sorted.markdups.baseRecal.bam \
     --tumor-sample TCRBOA2-Tumor \
     --input TCRBOA2-Normal-WEX.region.sorted.markdups.baseRecal.bam \
@@ -591,8 +591,8 @@ Then, pass the PON to mutect:
 ```bash
 ## Note the addition of the --panel-of-normals flag
 gatk Mutect2 \
-    -R ../references/reference.fasta \
-    --panel-of-normals 1000g_pon.hg38.vcf.gz \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
+    --panel-of-normals ~/mutation_calling/exercises_02_mutation_calling/references/1000g_pon.hg38.vcf.gz \
     --input TCRBOA2-Tumor.region.markdups.baseRecal.bam \
     --tumor-sample TCRBOA2-Tumor \
     --input TCRBOA2-Normal.region.markdups.baseRecal.bam \
@@ -615,7 +615,7 @@ the GATK package.
 gatk FilterMutectCalls \
     --filtering-stats TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtering_stats \
     --variant TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.vcf \
-    --reference ../references/reference.fasta \
+    --reference ~/mutation_calling/exercises_02_mutation_calling/references/references/reference.fasta \
     --output TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtered.vcf
 ```
 
@@ -623,7 +623,7 @@ Now, we can select just the `PASS` variants using gatk's `SelectVariants` tool.
 
 ```bash
 gatk SelectVariants \
-    -R ../references/reference.fasta \
+    -R ~/mutation_calling/exercises_02_mutation_calling/references/reference.fasta \
     -V TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.filtered.vcf \
     --exclude-filtered \
     -O TCRBOA2-Tumor-WEX.TCRBOA2-Normal-WEX.region.mutect.filtered.pass_only.vcf.gz

@@ -959,18 +959,14 @@ variants, metadata subtypes, and signatures activities:
 
 <div class="q_box">
 
-- **Q17.** What is the cause why two samples that have variants in the
-  ED of *POLE* gene do not have activities in the SBS10a and SBS10b
-  signatures? **There is no SNP variant in those samples**
-  
-- **Q18.** Which are the samples that have variants in the ED POLE gene
+- **Q17.** Which are the samples that have variants in the ED POLE gene
   and have activities signatures as SBS10a and SBS10b but do not have
   assigned subtype in the metada (acts_and_metadata)? <br>
-  **TCGA-AA-3977-01, TCGA-AA-A00N-01**
+  **TCGA-AA-3977-01, TCGA-AA-A00N-01, TCGA-AG-3892-01, TCGA-AG-A002-01, TCGA-EI-6917-01, TCGA-F5-6814-01**
 
-- **Q19.** What dou you think about two samples with fewer mutations? **They do not have the POLE signature and are not hypermutated**
+- **Q18.** What dou you think about two samples with fewer mutations? **They do not have the POLE signature and are not hypermutated**
   
-- **Q20.** In relation to the paper shared above, which gene do you
+- **Q19.** In relation to the paper shared above, which gene do you
   think may have a mechanism similar to that of POLE. Variants in a
   specific domain and specific mutational signature? **POLD1**
   

@@ -964,7 +964,22 @@ variants, metadata subtypes, and signatures activities:
   assigned subtype in the metada (acts_and_metadata)? <br>
   **TCGA-AA-3977-01, TCGA-AA-A00N-01, TCGA-AG-3892-01, TCGA-AG-A002-01, TCGA-EI-6917-01, TCGA-F5-6814-01**
 
-- **Q18.** What dou you think about two samples with fewer mutations? **They do not have the POLE signature and are not hypermutated**
+``` r
+# Get samples from POLE group
+samples_group_POLE = metadata %>%
+    filter(Subtype == 'COAD_POLE') %>%
+    pull(Sample.ID)
+
+# Add an additional filter to the list of samples that have a "variant in the ED of POLE" and it's activities in the SBS10a and SBS10b signature
+SBS96_Activities_POLE %>%
+  filter(Samples %in% Samples_with_ED_POLE_var$Tumor_Sample_Barcode) %>%
+  filter(!(Samples %in% samples_group_POLE))
+
+
+```
+
+
+- **Q18.** What do you think about two samples with fewer mutations? **They do not have the POLE signature and are not hypermutated**
   
 - **Q19.** In relation to the paper shared above, which gene do you
   think may have a mechanism similar to that of POLE. Variants in a

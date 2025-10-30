@@ -68,7 +68,7 @@ this tumor have in total?
 4. To call somatic variants, we do the following:
 - Call all mutations in the tumor
 - Call all mutations in the normal
-- Subtract out the germline background to generate somatic alls.  
+- Subtract out the germline background to generate somatic calls.  
 
 Knowing this, which of the following Venn Diagrams best represents our
 data and the expected number of variants in the germline and somatic VCFs?
@@ -137,7 +137,7 @@ mkdir mutation_calling
 cd mutation_calling
 ```
 
-**Updated 2025**: The entire tutorial, except for the MAF / huge reference files, now live in a single tarball 🎉 .
+**Updated 2025**: The entire tutorial, except for the MAF / huge reference files, now lives in a single tarball 🎉 .
 
 A compressed tarball of the mutation calling exercise data is graciously hosted by Phileal: `https://public.phileal.com/tutorials/cancer_genome_analysis_2025/exercises_02_mutation_calling.tgz`
 
@@ -309,7 +309,7 @@ When you're done, you should have four FASTQ files:
 TCRBOA2-N-WEX.region_1.fastq
 TCRBOA2-N-WEX.region_2.fastq
 TCRBOA2-T-WEX.region_1.fastq
-TCRBOA2-N-WEX.region_2.fastq
+TCRBOA2-T-WEX.region_2.fastq
 ```
 
 
@@ -634,7 +634,7 @@ gatk SelectVariants \
 There are many ways to do variant quality control. Below, we demonstrate how to use Integrated Genomics Viewer (IGV),
 which is perhaps the most commonly-used program for analyzing variants in BAMs/VCFs.
 
-We also introduce some packages for basic quality control, but we enourage you to focus on _what's_ being plotted
+We also introduce some packages for basic quality control, but we encourage you to focus on _what's_ being plotted
 or analyzed rather than how to do it. Programs change throughout time; focusing on the basic parameters to think about when
 checking your data - depth, quality, filter fields, etc. - will help you build an intuition for how to do quality control regardless
 of what pipeline or software your use.
@@ -774,7 +774,7 @@ What is the approximate purity of our tumor if:
 
 To make use of our variants, we'll want to annotate them. The GATK includes a tool called Funcotator
 that can annotate our VCF with information from databases such as the name of the gene a variant lies in,
-the variant's effect on the protein if any, and whether the variant is present at high allele frequcny in
+the variant's effect on the protein if any, and whether the variant is present at high allele frequency in
 any populations. Funcotator can output either VCF or MAF, both of which can be used in downstream tools.
 
 **NOTE: Skip running this section if you're on the VM. The funcotator sources are too large. You can download an example MAF file from: https://r2-public-worker.atacama.workers.dev/TCRBOA2-Tumor.TCRBOA2-Normal.funcotated.maf.gz**
@@ -946,13 +946,11 @@ wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRC
 gunzip GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
 ```
 
-3. Create our references indices using the instructions in the indexing section above (Hint: use the following commands.):
+3. Create our references indices using the instructions in the indexing section (Hint: use the following commands.):
 
 ```bash
 samtools faidx <ref>
-```
-
-Example:
+```Example:
 
 ```bash
 samtools faidx GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
@@ -969,7 +967,6 @@ For our example:
 ```bash
 bwa index GCA_000001405.15_GRCh38_no_alt_analysis_set.fna
 ```
-
 Then, create the FASTA dict file using GATK: 
 
 ```bash
